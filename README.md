@@ -2,7 +2,7 @@
 
 ## About This Repository
 
-This repository contains the complete LaTeX source, figures, and compiled PDF of my studienarbeit (student research project), submitted on 19.08.2021 to the Technische Universität Braunschweig, Department of Mechanical Engineering, Chair for Overall Aircraft Design, in cooperation with the German Aerospace Center (DLR).
+This repository contains the complete LaTeX source, figures, and compiled [PDF](100_Compiled/main.pdf) of my studienarbeit (student research project), submitted on 19.08.2021 to the Technische Universität Braunschweig, Department of Mechanical Engineering, Chair for Overall Aircraft Design, in cooperation with the German Aerospace Center (DLR).
 
 ![Gradient Model 28](2_Figures/0_Deco/grad_Model_28-1.png)
 
@@ -26,7 +26,8 @@ This studienarbeit focuses on the development of a module for mission analysis w
 
 ## Repository Structure
 
-- `100_Compiled/`: Contains the final compiled PDF of the thesis
+- Inshallah [Final compiled PDF](100_Compiled/main.pdf)
+- `100_Compiled/`: Contains log, auxiliary files, and the compiled PDF itself
 - `1_Latex_Files/`: LaTeX source files
 - `2_Figures/`: Figures and images used in the thesis
 - `3_Bibtex/`: Bibliography files
