@@ -1,0 +1,15 @@
+*.cmf
+*.err
+*.fem
+*.h3d
+*.hm
+*.html
+*.m
+*.mat
+*.mesg
+*.mvw
+*.out
+*.res
+*.sh
+*.stat
+*.vtk

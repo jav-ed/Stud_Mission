@@ -1,0 +1,508 @@
+
+\section{Shape Gradients}
+\label{sec_Shape_Gradients}
+In this section it shall be explained, 
+how the gradients of the 
+presented cruise fuel burn equation (ODE in equation \eqref{eq_10}), 
+can be computed. When the gradients are 
+mentioned, then gradients with respect to 
+the shape parameter, which are used to 
+define the aircraft wing, are meant. For this 
+work two main methods were evolved, an 
+analytical and a numerical approach. The first one, however 
+showed not be successful. A possible explanation for that 
+will be given in the upcoming section. The numerical 
+approach is based on the 
+\emph{Central differencing Scheme} and is 
+divided into 2 different workflows 
+called direct and indirect, which will 
+be elaborated in subsection \eqref{subsec_CDS}.
+Furthermore, a step-size study in order to find 
+a reasonable step-size and thus 
+reliable gradients will be topic of the subsection 
+\ref{subsec_CDS}
+
+\subsection{Analytical attempt}
+\label{subsec_Anly_Attempt}
+Assuming, an analytical solution is possible, 
+a fast and maximal computational accurate solution is obtained.
+These were the main reasons for trying to find an 
+analytical solution. Fast in this regard means, 
+the result is received immediately after 
+all mathematical operations (summation, multiplication) 
+are executed without any necessity of additional repetitive 
+loops. The state equation for the cruise fuel burnt is 
+written below again and for simplicity will be referred to as  
+$ODE$ and the objective is to find $dODE$.
+
+\begin{equation*}
+    ODE = \frac{dm_{cr}}{ds} = \frac{g}{a} \: \frac{1}{Ma}\;
+    TSFC\, (m_s - m_{fe}) \; \frac{LoD\,tan(\theta)+1}
+    {LoD\,cos(AoA) + sin(AoA)}
+\end{equation*}
+
+The ODE's gradient $dODE$ with respect to the shape 
+parameters is already given in \cite{ilic_goal_2013}. However, 
+the same work has been done again in order to 
+verify the existing solution. Once by hand and once 
+by using Python's library \emph{SymPy} for a symbolic solution.
+Ilic \cite{ilic_goal_2013} results could be 
+proven to be entirely correct and shall be 
+stated in the upcoming equations. Since 
+the gradient version is a term loaded equation, 
+it will be split into groups, as advised in 
+\cite{ilic_goal_2013}. The grouped 
+equation as the new basis is given in equation
+ \eqref{eq_38} for which its terms definitions 
+ are provided in equations \eqref{eq_39}
+ to \eqref{eq_41}
+
+
+\begin{equation}
+    \label{eq_38}
+    ODE = k_c \, k_a \, k_{m}
+\end{equation}
+
+\begin{equation}
+    \label{eq_39}
+    k_c  = \frac{g}{a} \frac{1}{Ma} \, TSFC
+\end{equation}
+
+\begin{equation}
+    \label{eq_40}
+    k_a  = \frac{LoD \, tan(\theta) +1 }{LoD \, cos(AoA) + sin(AoA)}
+\end{equation}
+
+\begin{equation}
+    \label{eq_41}
+    k_m  = m_s - m_{cr}
+\end{equation}
+
+A change in the shape parameter $p$ results 
+into a change in $TSFC\,, m_s, m_{cr}, LoD, AoA$, which 
+means these variables are not to be considered as constants.
+Equations \eqref{eq_42} to \eqref{eq_47} shows 
+the general form of the $dODE$, where 
+the flight path angle $\theta \neq 0$ is not 
+necessarily zero. The equations \eqref{eq_44}
+and \eqref{eq_45} results from 
+the steady state flight condition. Here 
+the denoting of the variables 
+$q,\, S,\, W\,, L\,, D \, , T$ is the dynamic pressure,
+reference wing area, weight, lift, drag and thrust, 
+respectively.
+
+
+\begin{equation}
+    \label{eq_42}
+    \frac{dk_a}{dp} = \frac{[ tan(\theta) \, sin(AoA) - cos(AoA)]
+    \,\frac{dLoD}{dp} + [LoD \,sin(AoA) - cos (AoA)] 
+    \,[LoD \, tan(\theta) + 1] \, \frac{dAoA}{dp} }
+    {[LoD \, cos(AoA) + sin (AoA)]^{2}}
+\end{equation}
+
+
+\begin{equation}
+    \label{eq_43}
+    \frac{dLod}{dp} = \frac{d}{dp} \, \frac{C_L}{C_D} = 
+    \frac{1}{C_{D}^{2}} \left(C_D  \frac{dC_L}{dp} - 
+    C_L \frac{dC_D}{dp}  \right)
+\end{equation}
+
+
+\begin{equation}
+    \label{eq_44}
+    L = W \,cos(\theta) - [D + W \, sin(\theta)]\, tan(AoA)
+\end{equation}
+
+\begin{equation}
+    \label{eq_45}
+    C_L = \frac{m\, g}{q \, S}\,[cos(\theta) - sin(\theta) tan(AoA)] -
+     C_D \, tan(AoA)
+\end{equation}
+
+\begin{multline}
+    \label{eq_46}
+    % \begin{split}
+        \frac{dC_L}{dp} = \frac{g}{q\, S}\, [cos (\theta) - sin(\theta)\, tan(AoA)]
+        \frac{dm}{dp} -
+         \frac{m \, g}{q \ S^{2}}\,[cos(\theta) - sin (\theta) 
+        tan(AoA)] \frac{dS}{dp} \\
+        - \frac{1}{cos(AoA)^{2}} \left(\frac{m\, g}{q \, S} sin(\theta) + C_D
+        \right) \frac{dAoA}{dp} - tan (AoA) \frac{dC_D}{dp}
+    % \end{split}
+\end{multline}
+
+\begin{equation}
+    \label{eq_47}
+    \left(\frac{dC_L}{dp}\right)_{T=0} = \frac{g}{q\, S}cos(\theta) 
+    \frac{dm}{dp} - \frac{m\, g}{q\, S^{2}} cos(\theta)\frac{dS}{dp}
+\end{equation}
+
+The \emph{missioninformer} assumes the flight 
+path angle $\theta$ to be zero and thus the 
+above stated equations are simplified to 
+the two upcoming equations. Even though 
+it has been showed how $LoD$ can be 
+derived w.r.t. the shape parameter, however 
+since its gradient is provided 
+as input data, there is no need 
+to its equation.
+
+
+\begin{equation}
+    \label{eq_48}
+    k_a (\theta = 0)  = \frac{1 }{LoD \, cos(AoA) + sin(AoA)}
+\end{equation}
+
+\begin{equation}
+    \label{eq_49}
+    \frac{dk_a(\theta = 0)}{dp} =
+     \frac{- cos(AoA)
+    \,\frac{dLoD}{dp} + [LoD \,sin(AoA) - cos (AoA)] 
+    \, \frac{dAoA}{dp} }
+    {[LoD \, cos(AoA) + sin (AoA)]^{2}}
+\end{equation}
+
+The mass term $k_m$ was the obstacle, why the gradients 
+can not be solved  analytically as it will be shown now.
+The starting mass $m_s$ can be modeled as 
+done in equation \eqref{eq_50}, where 
+$m_{struc},\, m_p,\,  m_{cr}(R),\, m_o$ are denoted 
+as masses of structure, payload, cruise and other, respectively.
+The structure and other masses as well the payload 
+are not meant to change by changing the shape parameter.
+The only remaining mass, which is desired to 
+change with the cruise range $R$ is $m_{cr}(R)$. 
+Transforming this idea to mathematical expressions,
+the equations \eqref{eq_51} to \eqref{eq_52}
+are obtained.
+\begin{equation}
+    \label{eq_50}
+    m_s = m_{struc} + m_p + m_{cr}(R) + m_o
+\end{equation}
+
+\begin{align}
+    \frac{dm_{struc}}{dp} &= 0 \label{eq_51}\\
+    \frac{dm_{p}}{dp} &= 0\\
+    \frac{dm_{cr}(R)}{dp} &\neq 0\\
+    \frac{dm_{o}}{dp} &= 0 \label{eq_52}
+\end{align}
+
+Following these the equation \eqref{eq_53} is 
+obtained and by inserting this to the mass definition 
+from equation \eqref{eq_41}, the undesired state 
+given in 
+equation \eqref{eq_54} can be observed. 
+\begin{equation}
+    \label{eq_53}
+    \frac{dm_s}{dp} = \frac{dm_{cr}(R)}{dp}
+\end{equation}
+
+\begin{equation}
+    \label{eq_54}
+    \begin{aligned}
+        \frac{dk_m}{dp} &= \frac{dm_s}{dp} - \frac{dm_{cr}(R)}{dp}\\
+                    &\rightarrow \frac{dm_{cr}(R)}{dp} -  \frac{dm_{cr}(R)}{dp} \\     
+        &\Rightarrow 0
+    \end{aligned}
+\end{equation}
+
+In this case the term for which the gradient is desired to be calculated 
+vanished. Therefore, the approach stated in 
+equation \eqref{eq_55} was pursued instead, which leads 
+to equation \eqref{eq_55_dkm_dp}. In words, 
+the change of the starting mass is assumed to be constant and 
+thus is not influenced by the change of any shape parameter.
+At this point, it shall clearly be highlighted that 
+this assumption is only made in 
+order not to lose the cruise fuel mass term. Whether 
+this models the physical behavior correctly 
+was not known at this stage.
+
+\begin{equation}
+    \label{eq_55}
+    \frac{dm_s}{dp}  = 0 
+\end{equation}
+
+\begin{equation}
+    \label{eq_55_dkm_dp}
+    \frac{dk_m}{dp}  = \frac{-dm_{cr}}{dp}
+\end{equation}
+
+However, after having performed, the complete 
+process for obtaining the analytical solution 
+for the cruise fuel mass gradients, 
+it can be stated that the assumption
+made in equation \eqref{eq_55} is 
+not correct. For this knowledge to gain, 
+the gradients were calculated numerically  
+using central finite differences.
+Due to the big deviation between 
+the analytical and the numerical 
+solution, the proposed finding can be given.
+Nevertheless, the further progress for 
+receiving the final analytical solution 
+shall be explained. The variables $m_{f,zero},\,
+f_{reser}, \, m_f$ for 
+the upcoming equations are 
+denoted as zero fuel mass, fuel reserve 
+mass, and total 
+fuel for all flight segments, respectively. 
+As explained in section \ref{sec_Fuel_Mass_iter}
+the variable starting with $fr_i$ are fuel 
+fractions, where  
+$fr_1 \,, fr_2\,,fr_3 \,, fr_4,\, fr_5\,, fr_6\, , fr_7, \,
+fr_{cr}$ 
+are for the  
+flight segments, engine start, taxi to runway, takeoff,
+climb and acceleration, taxi to parking,
+landing, descent and cruise fuel fraction respectively.
+
+
+\begin{equation}
+    \label{eq_55_Fcr}
+    fa \,(fr_{cr}) = f_{zero} \, fr_{cr} \, fr_1 \, fr_2\,fr_3 \, fr_4 \, 
+    fr_5\, fr_6\, fr_7
+\end{equation}
+
+\begin{equation}
+    \label{eq_56}
+    m_{f} = \,\frac{fa (fr_{cr}) - m_{f,zero}}{f_{reser} -fr_{cr} 
+    \,fr_1 \, fr_2\,fr_3 \, fr_4 \, 
+    fr_5\, fr_6\, fr_7 }
+\end{equation}
+
+\begin{equation}
+    \label{eq_57}
+    fr_{cr} =  \frac{m_s - m_{cr}}{m_s}
+\end{equation}
+
+\begin{equation}
+    \label{eq_58}
+    m_s = (m_{f,zero} + m_{f})  \, fr_1 \, fr_2\,fr_3 \, fr_4
+\end{equation}
+
+
+The objective is to solve the equation \eqref{eq_56}. However, the 
+problem is that the three equations \eqref{eq_56} to \eqref{eq_58}
+are coupled. This can be seen better by rearranging the following 
+equation. 
+
+\begin{equation}
+    \label{eq_59}
+    ff = fr_1 \, fr_2\,fr_3 \, fr_4 ,\, fr_5\, fr_6\, fr_7 
+\end{equation}
+
+\begin{equation}
+    \label{eq_60}
+    \begin{aligned}
+        m_f &= \frac{fr_{cr} fr_1 \, fr_2\,fr_3 \, fr_4 ,\, fr_5\, fr_6\, fr_7 -1
+        }{f_{reser} - fr_{cr} ,\ fr_1 \, fr_2\,fr_3 \, fr_4 ,\, fr_5\, fr_6\, fr_7 }
+        \, m_{f,zero}\\
+        &= \frac{fr_{cr} ,\ ff - 1   }{f_{reser}- fr_{cr} ,\ ff  } \, m_{f,zero}
+    \end{aligned}
+\end{equation}
+
+\begin{equation*}
+    fr_{cr} =  \frac{m_s - m_{cr}}{m_s}
+\end{equation*}
+
+\begin{equation*}
+    m_s = (m_{f,zero} + m_{f})  \, fr_1 \, fr_2\,fr_3 \, fr_4
+\end{equation*}
+
+
+It can be observed that in equation \eqref{eq_60}, the 
+output of the ODE, the fuel cruise mass $m_{cr}$ is required. 
+This, according to the equation \eqref{eq_57}, requires for its solution 
+the cruise starting mass $m_s$. However, for 
+getting the starting mass $m_s$, 
+according to equation \eqref{eq_58}, the total fuel mass 
+$m_f$ is demanded. The problem can be understood visually 
+quite easily and thus is provided in figure \ref{fig_6_Coupled}.
+
+\begin{figure}[!h]
+        \centering
+        \def\svgwidth{0.4\textwidth}
+        \input{2_Figures/2_Task/2_Coupled.pdf_tex}
+        \caption{Coupled mass equations}
+        \label{fig_6_Coupled}
+\end{figure}
+
+\FloatBarrier
+One way to solve equation is to solve the equation \eqref{eq_62}
+with another fix-point iteration. The used 
+scalars are given in equations \eqref{eq_59} and \eqref{eq_61}.
+The one disadvantage lies 
+in the nature of fix-point iterations, its repetitiveness, 
+which requires higher execution time. 
+The other is, that a more precise solution could 
+be obtained. 
+\begin{equation}
+    \label{eq_61}
+    ff_2 =  fr_1 \, fr_2\,fr_3 \, fr_4
+\end{equation}
+
+\begin{equation}
+    \label{eq_62}
+    m_f = m_{f,zero} = \dfrac{\left(1- \dfrac{m_{cr}}{(m_{f,zero} + m_f) \ ff_2}
+    \right)ff -1}{f_{reser} - ff \, \left(  1 -\dfrac{m_{cr}}{(m_{f,zero} + m_f) \ ff_2}\right)}
+\end{equation}
+
+\vspace{0.17cm}
+However, with some trial and error this coupling could be resolved 
+and a without the necessity of fix-point 
+iterations could be found, which is given in equation 
+\eqref{eq_63}. The form of the solution, which was found by 
+hand, originally contained a  square root. By making use of 
+Matlab and Pythons library \emph{SymPy}, a symbolic solution 
+could also be obtained. Matlabs and \emph{Sympy}s solution 
+were equivalent in their form, thus also in their results, when 
+inserting values for the variables. However, their form 
+of solution did not contain any square root. 
+The stated equation \eqref{eq_63} was used for further 
+progress, since it is assumed to be easier for 
+deriving gradients.
+
+\begin{equation}
+    \label{eq_63}
+    m_f = \dfrac{ff_2 \, m_{f, zero} + ff \, m_{cr} - ff \, ff_2 \, m_{f, zero}}
+    {ff_2 \, (ff - f_{reser})}
+\end{equation}
+
+In order to highlight why equation \eqref{eq_63} is easier
+for deriving gradients, the  considered constants are
+placed on the left side and the depended or relevant part 
+for derivation are on the right side in equation 
+\eqref{eq_64} 
+
+\begin{equation}
+    \label{eq_64}
+    m_f = \dfrac{ff_2 \, m_{f, zero}  - ff \, ff_2 \, m_{f, zero}}
+    {ff_2 \, (ff - f_{reser})} + \dfrac{ff \, m_{cr}(p)}{ff_2 \, (ff - f_{reser})} 
+\end{equation}
+
+Recall, $m_{cr}$ is the fuel mass for the cruise segment 
+and is the output of the ODE, which now is 
+desired to be derived with respect to the shape 
+parameters. In equation \eqref{eq_64}, the term 
+$m_{cr}(p)$ is indicated to be the only important 
+parameter for the derivation. Therefore, the 
+derivative of the total fuel mass can 
+be written as in equation \eqref{eq_66}, where
+the mathematical definition for $dODE$ is given 
+in equation \eqref{eq_65}.
+
+\begin{equation}
+    \label{eq_65}
+    dODE = \frac{d}{dp}\, ODE = \frac{d}{dp}\left(\dfrac{dm_{cr}}{ds}\right)
+\end{equation}
+
+\begin{equation}
+    \label{eq_66}
+    \frac{dm_f}{dp}= 
+    \dfrac{ff}{ff_2 \, (ff - f_{reser})} \, \cdot \, dODE
+\end{equation}
+
+
+Finally, by inserting all equations into each 
+other the $dODE$'s final version is given 
+equation \eqref{eq_67}, where $LoD, AoA, TSFC$
+and their gradients are obtained by invoking 
+the surrogate models, $k_a \, ,k_m ,\, k_c$
+are found in equations \eqref{eq_48}, \eqref{eq_41} and 
+\eqref{eq_39}, respectively. The gradients 
+$\frac{dk_a}{dp}, \, \frac{dk_m}{dp}$
+are found in equations \eqref{eq_49} and \eqref{eq_55_dkm_dp}, 
+respectively. The variable $p$ here is defined 
+as a scalar for the sake of simplicity. In application 
+$p$  in the equations \eqref{eq_65} to \eqref{eq_67} is  
+a vector. Thus, the equations 
+need to be solved for each component 
+of $p$.
+
+
+\begin{equation}
+    \label{eq_67}
+    \begin{aligned}
+        dODE &= \frac{ODE}{dp} = \frac{d}{dp}\left(\dfrac{dm_{cr}}{ds}\right)\\
+        &= k_a \, k_m \, k_c \, \frac{dTSFC}{dp} +k_c \, TSFC \, k_a \, 
+        \frac{dk_m}{dp} +k_c  TSFC \, k_m \, \frac{dk_a}{dp} \\
+        &= k_c \left(k_a \, k_m \, \frac{dTSFC}{dp}+ 
+        TSFC \, k_a \, \frac{dk_m}{dp} + TSFC \, k_m \, 
+        \frac{dk_a}{dp}\right)\\
+        &= k_c \left(k_a \, k_m \, \frac{dTSFC}{dp}+ TSFC \, k_m \, 
+        \frac{dk_a}{dp}\right) - k_c \, TSFC \, k_a \, \frac{dODE}{dp} \\
+        &=  k_c\, \dfrac{\left(k_a \, k_m \, \dfrac{dTSFC}{dp}  + TSFC \, k_m \,
+         \dfrac{dk_a}{dp}\right)}
+        {1+ k_c \, TSFC \, k_a}
+    \end{aligned}
+\end{equation}
+
+After having seen the formal equations, there are 
+two possible ways to calculate the gradients,
+the one-shot method and the indirect method.
+Both shall be explained with their respective 
+workflow in figures \ref{fig_7_Oneshot} and 
+\ref{fig_8_Iterative}. 
+The one-shot version, depicted in figure 
+\ref{fig_7_Oneshot}, will let 
+the state fix point-iteration finish as 
+discussed in section \ref{sec_Fuel_Mass_iter}.
+Based on the converged results it 
+will then directly calculate the gradients 
+for which only one evaluation is required. Since 
+the state fix-point iteration is indispensable
+with effectively only one more function call the 
+gradients are found. \newline
+
+The iterative workflow is depicted 
+in figure \ref{fig_8_Iterative}.
+The initial starting and total fuel mass 
+$m_{s,0}, m_{f,0}$ are guessed as explained 
+in section \ref{sec_Fuel_Mass_iter}. In 
+order to calculate the gradient 
+of the cruise fuel weight the 
+initial cruise fuel weight and cruise
+starting mass is passed to the dODE-block, which 
+calculates the gradient of the cruse fuel 
+weight with respect to the shape parameters. 
+This block is not required in the 
+one-shot-version nor in the state 
+fix-point iteration explained in section 
+\ref{sec_Fuel_Mass_iter}. Thus, 
+here an additional calculation block is injected.
+It is used for computing 
+the gradient of the total fuel mass. 
+Now the whole process is repeated 
+as long as the deviation between the 
+previous and the current 
+gradient of the total cruise 
+fuel mass is below 
+a defined threshold. Both methods were 
+implemented in \emph{missioninformer}, 
+however they are not active, because of 
+the explained reasons. 
+
+
+
+\begin{sidewaysfigure} [!h]
+    \resizebox{1.\textwidth}{!}{
+        \hspace*{-5cm} 
+    \input{2_Figures/2_Task/5_Grad_Direct.tikz}
+    }
+    \caption{Analytical attempt to calculate gradients - one-shot version}
+    \label{fig_7_Oneshot}
+\end{sidewaysfigure}
+
+\begin{sidewaysfigure} [!h]
+    \resizebox{1\textwidth}{!}{
+        \hspace*{-5cm} 
+    \input{2_Figures/2_Task/4_Grad.tikz}
+    }
+    \caption{Analytical attempt to calculate gradients - iterative version}
+    \label{fig_8_Iterative}
+\end{sidewaysfigure}
+
+

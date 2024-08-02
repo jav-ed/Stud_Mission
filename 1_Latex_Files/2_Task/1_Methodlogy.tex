@@ -1,0 +1,273 @@
+
+\chapter{Methodology}
+\label{chap_Methodlogy}
+In this chapter the employed equations, iterations and 
+surrogate models for 
+obtaining the state and gradients of the burnt fuel and their theoretical 
+background shall be given. Additionally, the 
+way of exploring methods, the reasons for 
+having chosen the methods and the proceeding to obtain solutions
+shall be explained. Furthermore, some workaround which was 
+required will be mentioned, e.g. in the upcoming section, 
+where a small tool was developed in order to get 
+the atmospherical relationships.
+
+% =====================================================================
+% ============= Atmospheric ===========================================
+% =====================================================================
+\section{Atmospheric conversions}
+One term inside the cruise fuel burn equation
+for the computation of the cruise segment fuel
+is the speed of sound ($a$), which 
+is not given by the user. However, what the user provides is 
+the altitude. By making use of one of the 3 common atmospheric models,
+ICAO-, US- Standard Atmosphere or Norm Atmosphere DIN 5450/LN 9300, 
+a relationship between pressure, density and altitude 
+($p, \rho, h$), can be obtained. For our purposes, the
+\emph{ICAO-Standard Atmosphere(ISA)} and 
+\emph{Norm atmosphere DIN 5450/LN 9300} were used within an altitude range 
+of 0-20 km (troposphere, lower stratosphere) 
+and 20-32 km (upper stratosphere), respectively. With the mentioned 
+atmospheric models, altitude can be obtained by providing 
+pressure and density and vice versa. The \emph{missioninformer} is
+capable of both and by following the equation \eqref{eq_1_Speed_Sound} 
+the speed of sound ($a$) can be calculated. The \emph{heat capacity ratio} is chosen 
+to be $\kappa = 1.4$. The reviewed process is 
+depicted in figure \ref{fig_3_Atmospheric}
+
+\begin{equation}
+    a = \sqrt{\kappa \frac{p}{\rho}}
+    \label{eq_1_Speed_Sound}
+\end{equation}
+
+\begin{figure}[!h]
+    \def\svgwidth{\linewidth}
+    \input{2_Figures/2_Task/1_atmospheric.pdf_tex}
+    \caption{Atmospheric model and calculation of the speed of sound $a$}
+    \label{fig_3_Atmospheric}
+\end{figure}
+
+
+%--------------- Von hier aus erneut lesen ---------------------
+ 
+% =====================================================================
+% ============= Cruise and Mission Fuel ===============================
+% =====================================================================
+\section{Cruise and mission fuel mass}
+\label{sec_Cruise_Mission_Fuel}
+In this section the derivation of the fuel burn equation 
+for the cruise segment and the applied solution method shall be 
+explained. Since the \emph{missioninformer} considers the whole 
+mission it will also be elaborated how the 
+fuel masses for the remaining flight segments are 
+obtained.\newline 
+
+The derivation of the cruise segment fuel burn equation, which 
+takes the form of an Ordinary Differential Equation (ODE) was provided by 
+Ilic in an \emph{DLR}-intern report 
+\cite{ilic_goal_2013}. For its derivation a constant altitude 
+()$h = const.$) is assumed. The cruise fuel burnt 
+mass is the mass of fuel, which is required for the airplane in order 
+to reach or fly a given range. The ODE is given in equation \eqref{eq_2_ODE_Orig}, 
+where $m_{fe}$ is the burnt fuel mass, called fuel expended accordingly 
+to the original 
+report \cite{ilic_goal_2013}. The derivation is applied with respect to 
+the range $ds$, $g,a,Ma,TSFC$ are denoted as the gravitational constant, 
+the speed of sound, the Mach number, and $TSFC$ thrust specific fuel 
+consumption, respectively. 
+\begin{equation}
+    \label{eq_2_ODE_Orig}
+        \frac{dm_{fe}}{ds} = \frac{g}{a} \: \frac{1}{Ma}\;
+        TSFC\, (m_s - m_{fe}) \; \frac{\frac{C_L}{C_D}\,tan(\theta)+1}
+        {\frac{C_L}{C_D}\,cos(AoA) + sin(AoA)}
+\end{equation}
+
+The fraction $\frac{C_L}{C_D} = \frac{L}{D} = LoD$ is called aerodynamical 
+performance or glide ratio. $AoA, \theta, m_s$ are denoted as the 
+angle of attack, flight path angle and cruise starting mass. The presented 
+equation is only one possible equation formulation, which can be employed to find the 
+cruise fuel burnt mass. In order to 
+understand why this is so, its derivation shall be explained briefly. In 
+his report \cite{ilic_goal_2013}, the author starts with the equilibrium equations 
+for steady flight. By inserting them into each other and using 
+equation transformations Ilic \cite{ilic_goal_2013} comes to 
+an expression for the thrust as: 
+$ T = f(m,g,LoD,AoA, \theta)$. At this stage, the change 
+of the fuel mass with the distance traveled can be 
+expressed in the following two ways: 
+
+\begin{equation}
+    \label{eq_3_}
+    \frac{dm_{fr}}{ds} = - \frac{TSFC}{Ma\, a \, cos(\theta) }\, T
+\end{equation}
+
+\begin{equation}
+    \label{eq_4}
+    \frac{dm_{fe}}{ds} = \frac{TSFC}{Ma\, a \, cos(\theta) } \,T
+\end{equation}
+
+Because the present total airplane mass m 
+in the thrust expression $ T = f(m,g,LoD,AoA, \theta)$ can be expressed in
+two ways, two equations (ODEs) are possible 
+as outcome to describe the cruise fuel mass burnt. One is over the 
+remaining fuel mass $m_{fr}$
+
+\begin{equation}
+    \label{eq_5}
+    m = m_e + m_{fr}  ,
+\end{equation}
+where $m_e$ is the end mass or the mass right before landing. 
+The second ODE is obtained by using the expended fuel mass as: 
+\begin{equation}
+    \label{eq_6_}
+    m = m_s - m_{fe}  ,
+\end{equation}
+where $m_s$ is the cruise start mass or the mass just 
+before cruise, after climb and acceleration. 
+According to common field specific knowledge, masses in aerospace 
+can be further 
+distributed into detailed definitions, e.g. the takeoff mass  
+can be further split up in operating empty weight, 
+payload and fuel weight. The operating empty weight itself 
+can be split up into airframe structure, propulsion 
+group, airframe services and equipment, fixes equipment, 
+removable equipment, standard items, standard item 
+variation and operational items \cite{torenbeek_synthesis_1982}.
+Depending on the field of research and the desired 
+level on accuracy the 
+mass division can be continued. However, the start mass 
+$m_s$ from equation \eqref{eq_6_} contains the fuel weight 
+for all segments which are followed after climb and
+acceleration, cruise till taxi to parking.
+During the flight this fuel mass 
+is going to be reduced. With this background the two 
+upcoming equations can be looked at:
+
+\begin{equation}
+    \label{eq_7_}
+    \frac{dm_{fr}}{ds} = - \frac{g}{a} \, \frac{1}{Ma}\,TSFC \,(m_e + m_{fr})
+    \, \frac{\frac{C_L}{C_D}\,tan(\theta) + 1}{
+        \frac{C_L}{C_D} \, cos(AoA) + sin(AoA)}
+\end{equation}
+
+\begin{equation}
+    \label{eq_8_}
+    \frac{dm_{fe}}{ds} = \frac{g}{a} \, \frac{1}{Ma}\,TSFC \,(m_s - m_{fe})
+    \, \frac{\frac{C_L}{C_D}\,tan(\theta) + 1}{
+        \frac{C_L}{C_D} \, cos(AoA) + sin(AoA)}
+\end{equation}
+
+The difference between both comes through their derivation and 
+thus the thought process or undertaken assumptions. 
+Equation \eqref{eq_7_} works with remaining fuel, 
+the end mass $m_{e}$ is known, 
+the fuel is calculated and with these 
+the start mass $m_{s}$ is obtained, see 
+equation \eqref{eq_5}. This version lets 
+the start mass be variable and requires 
+the end mass as input. For equation 
+\eqref{eq_8_} the start mass $m_{s}$ is 
+passed as an input argument, the expended or required 
+fuel for given cruise range is calculated. \newline 
+
+Comparing 
+the solution methods for the ODEs \eqref{eq_7_} 
+and \eqref{eq_8_}, the first is integrated backwards
+from cruise range end to zero.
+In other words, the initial condition is given 
+with the assumption that the remaining fuel 
+at the end of the range equals zero $m_{fr}(R=R_{cr,max}) =0$, 
+where $R$ is denoted as the range. As mentioned in 
+section \ref{sec_1_State}, \emph{pyMission} follows 
+this approach for solving the ODE.
+In contrast, for defining the initial condition 
+for equation \eqref{eq_8_} the fuel 
+mass at the cruise start or cruise range zero 
+is provided. 
+It can be understood, that before the 
+cruise even starts, no fuel in the cruise 
+section is burnt. Note, the presented ODEs 
+are only valid for a cruise segment. Therefore, 
+just at the start of the cruise segment, neglecting 
+other flight segments for this consideration, no 
+fuel within the cruise segment is burnt.
+Thus, the initial condition is formulated as 
+equation \eqref{eq_8_Inital_Condit}. In this way, the ODE is 
+integrated forward from 0 to given range.\newline
+
+\begin{equation}
+    \label{eq_8_Inital_Condit}
+    m_{fe}(R_{cr}=0) = 0
+\end{equation}
+
+For this work the viewpoint of equation \ref{eq_8_} 
+considering  
+fuel expended or burnt is going 
+to be applied in order to derive the upcoming 
+solutions. Furthermore, the flight path angle is 
+set to zero 
+$\theta = 0$, see equation \eqref{eq_9}. Additionally, with the introduced 
+relationship $LoD = \frac{C_L}{C_D}$ the final 
+ODE can be formulated as equation \eqref{eq_10} \newline
+
+\begin{equation}
+    \label{eq_9}  
+    \frac{dm_{fe}}{ds} = \frac{g}{a} \, \frac{1}{Ma}\,TSFC \,(m_s - m_{fe})
+    \, \frac{1}{
+        \frac{C_L}{C_D} \, cos(AoA) + sin(AoA)}  
+\end{equation}
+
+
+\begin{equation}
+    \label{eq_10}  
+    \frac{dm_{fe}}{ds} = \frac{g}{a} \, \frac{1}{Ma}\,TSFC \,(m_s - m_{fe})
+    \, \frac{1}{
+        LoD \, cos(AoA) + sin(AoA)}  
+\end{equation}
+
+Before explaining the methodology for solving the chosen ODE 
+\eqref{eq_10}, the inclusion of the remaining flight segments shall 
+be explained. In \cite{roskam_airplane_1986} fuel 
+fractions, which are the ratio of the aircraft total 
+weight at the end of a flight segment to the weight at the start 
+of the same segment,
+were provided. The employed fuel fractions 
+for the associated flight segment are presented in the 
+table \ref{tab_1}. The obvious advantage of applying 
+empirical based fractions instead of solving physical based equations 
+for flight segments other than cruise, is the 
+absence of time and thus money consuming modeling
+and solving of 
+physical based equations and as consequence a 
+fast as well as easy implementation.
+Also, since only a multiplication is performed, the output 
+in \emph{Python} is obtained within more than a feasible time. The 
+disadvantage however, is a loss of accuracy. Given the fact that 
+most fuel is burnt during the cruise segment, this seems 
+a valid approach. For understanding, why the reserve fuel 
+fraction is set to $0.05$, consider the 
+equation \eqref{eq_56} in the
+subsection \ref{subsec_Anly_Attempt}.
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{|l|c|c|}
+        \hline
+        Flight segment & Fuel fraction\\
+        \hline
+        engine start & 0.99 \\
+        taxi to runway & 0.99 \\
+        takeoff & 0.995 \\
+        climb and acceleration & 0.98 \\
+        descent &  0.99 \\
+        landing &  0.992 \\
+        taxi to parking &  0.99\\
+        reserve &  0.05\\
+        \hline
+    \end{tabular}
+    \caption{Fuel fractions for non cruise flight segments }
+	\label{tab_1}
+\end{table}
+
+
+

@@ -1,0 +1,212 @@
+
+% ===================================================
+% ============Introduce Missioninformer =============
+% ===================================================
+\section{Introducing missioninformer}
+\label{sec_introduc_Miss}
+In this section the overall processes and the functionalities 
+of the proposed tool \emph{missioninformer} shall be presented 
+in an abstract way, without intern solved equations at this stage.
+It is a code written entirely in \emph{Python} and makes 
+use of the following libraries:
+\begin{multicols}{2}
+    \begin{enumerate}
+        \item NumPy \item SciPy  \item matplotlib
+        \item SMARTy (DLR's own Python library)
+        \item re (regex)
+        \item[\vspace{\fill}]
+    \end{enumerate}
+\end{multicols}
+
+Its main workflow can be described with the figure \ref{fig_1_Missinfo}. It 
+obtains two input files and outputs the mass of total fuel which is required 
+for the given mission and the gradients of the mission fuel with 
+respect to shape parameters. 
+The mission input file is completely written in \emph{Python} and uses a regular dictionary, 
+which is similar to a json file for storing purposes. 
+In order to define one mission in the mission input file, the 
+following 3 groups of parameters need to be set. The first 
+group, named masses, contains weights:
+\begin{multicols}{2}
+    \begin{enumerate}
+        \item maximal takeoff weight
+        \item maximal landing weight  
+        \item operating empty weight
+        \item manufactures empty weights
+        \item maximum zero fuel weight
+        \item maximum fuel weight
+        \item design payload
+        \item maximum payload
+    \end{enumerate}
+\end{multicols}
+
+\begin{figure}[!h]
+    \def\svgwidth{\linewidth}
+    \input{2_Figures/1_Task/1_Missioninformer.pdf_tex}
+    \caption{Broad overview: Workflow \emph{missioninformer}}
+    \label{fig_1_Missinfo}
+\end{figure}
+
+\FloatBarrier
+The second group, named flying parameters, consists of the 
+cruise Mach number (\emph{Ma}), 
+cruise altitude (\emph{h}) and cruise range. The third group can be 
+adjusted optionally by the user. It allows to change the step size 
+for the central differencing scheme, which will be discussed 
+in section \ref{sec_Step_Size_Study} and define 
+a weighting factor for each mission. The step size steers the accuracy 
+and reliability of the calculated gradients. In case, multiple missions 
+shall be used, for each mission a weighting factor must be 
+given. Using multiple missions or adding missions is done easily by  
+copying the section of the parameters and
+redefining these with desired values. Each new mission is 
+summed to as one overall variable and needs to be passed 
+as an argument to the mission collection 
+method. \newline
+
+The second input for the \emph{missioninformer} is a database. It is required 
+to generate surrogate, i.e. interpolation models for the state variables 
+$LoD, AoA \,(\alpha), TSFC$ and their gradients with respect to all 
+shape parameters. $LoD$ is called glide ratio, sometimes referred to 
+performance and defined as: $LoD = \frac{C_L}{C_D} = \frac{L}{D}$, where 
+the prefix \emph{C} stands for coefficient and the letter \emph{L} and \emph{D} 
+are denoted as lift and drag, respectively. $AoA$ is the \textbf{a}ngle 
+\emph{o}f \textbf{a}ttack 
+and is commonly denoted with the greek letter $\alpha$. $TSFC$ is 
+called the \textbf{T}hrust \textbf{S}pecific \textbf{F}uel \textbf{C}onsumption.
+In order to get an interpolation model for the state and gradient variables, 
+the database must contain values for those and their associated inputs
+$Ma, h, mass$. The $mass$ is the total mass at the related condition
+for which the aircraft is trimmed.
+In simpler terms, considering figure \ref{fig_2_Lod_Interpol},
+it can be observed that for combinations of $Ma, h, mass$ 
+their associated known values for $LoD$ are passed to an interpolation generator. 
+Having obtained an interpolation model, for any given set of 
+$Ma, h, mass$ the corresponding $\tilde{LoD}$ can be calculated. It should 
+clearly stated that, the closer the input set ($Ma, h, mass$) 
+values are to those which were used to generate the interpolation model,
+the better the prediction for the outcome $\tilde{LoD},
+\tilde{AoA}, \tilde{TSFC}$ is. This means, if 
+the given input set is highly out of the range of the training data, 
+then an absurd extrapolation may occur. Figure \ref{fig_2_Lod_Interpol} 
+only depicts the workflow for obtaining an interpolation model for 
+$LoD$. However, analogously to the explained proceeding by only 
+replacing $LoD$ with the desired output variable ($AoA, TSFC$ and their 
+gradients), 3 interpolation models for the state variables and the
+remaining for the gradients can be achieved. \newline 
+
+Since for each state variable ($LoD, AoA, TSFC$) the gradient with 
+respect to each shape parameter is required, the number of the 
+interpolation models for the gradients is directly connected
+to the number of 
+the shape parameters. For example, having 126 shape parameters, 
+results in having 126 gradients for each state variable. Thus,
+126 interpolation models for the gradients of each state variable
+($LoD, AoA, TSFC$) 
+is necessary. In total, $126*3 = 378$ interpolation models only 
+for the gradients are required.\newline 
+% ============================================
+% ================Interpolation =====================
+% ============================================
+
+\begin{figure}[!h]
+    \def\svgwidth{\linewidth}
+    \input{2_Figures/1_Task/2_LoD.pdf_tex}
+    \caption{Exemplary interpolation model generation}
+    \label{fig_2_Lod_Interpol}
+\end{figure}
+
+Even though it might seem to be a heavy computation it 
+is much faster compared to the 
+CFD calculation performed for each sample point 
+to provide the state variables 
+and their gradients as training data.
+By using the interpolation approach the integration of 
+the Breguet's range equation and the iteration 
+of the mission fuel consumption 
+becomes feasible although using 
+accurate but time-expensive CFD-based data. Furthermore,
+the tool 
+scales nicely with an increasing number of 
+missions.
+However, 
+the disadvantage is that the quality of the calculations 
+completely depends on the quality of the interpolation models. The 
+interpolation model itself depends on the accuracy of 
+the provided input or training data as well as the 
+underlying method. Furthermore, 
+the final goal is to use the \emph{missioninformer} within a 
+gradient based optimization. The optimizing algorithm then 
+heavily relies on the correctness of the gradients. 
+Additionally, gradient computations itself is a sensitive 
+calculation to do. With the importance of the correct chosen 
+interpolation model in mind, in section \ref{sec_Surrogates}
+two commonly used interpolation methods and several options are investigated.
+\newline
+
+
+The database containing the training samples 
+is given by the output of \emph{DLR}'s aerodynamic analysis and 
+optimization workflow \emph{FSAerOpt} 
+\cite{merle_high-fidelity_2019} involving the 
+flow solver \emph{TAU}.
+It is calculated at trimmed states, however, trimming is not always
+feasible. 
+In this case, \emph{missioninformer} automatically identifies the not 
+trimmed values and does not include them into the intern \emph{Python} 
+database. This feature is part of the modular skills of the 
+missioninformer. It thus enables an easy extension or insertion 
+to an already existing workflow. This is reinforced by the type of output, 
+i.e. the total fuel burn and their gradients are stored as simple ASCII text files 
+and as NumPy arrays as well. In case of a \emph{Python} based 
+workflow, the NumPy 
+arrays can be loaded into the RAM (Random Access Memory)
+with one additional line of code. 
+
+\subsection{Workflow}
+A more detailed workflow is depicted in figure \ref{fig_3_Workflow}. 
+Before discussing the figure, note that, this is still a broad workflow, and 
+it is supposed to provide only a general and not a deep understanding. Among 
+other, the cruise segment fuel equation, its derivative, its solution, the used 
+interpolation models and outer loops for example for the mass recalculations 
+are skipped for now. The
+detailed elaboration happens in chapter \ref{chap_Methodlogy}. 
+The workflow \ref{fig_3_Workflow} can be read as follows: After 
+having generated the 
+database containing values for $LoD, AoA, TSFC$ and their 
+gradients for a given set of inputs ($Ma,h, mass$), the mission input file 
+can be adjusted in order to define the flight mission. In case of 
+a multi-mission definition one more step regarding weighting is done, which 
+is not depicted in the current workflow overview.
+% ============================================
+% ================ 2nd Workflow ==============
+% ============================================
+\begin{sidewaysfigure} [!h]
+    \resizebox{\textwidth}{!}{
+    \input{2_Figures/1_Task/3_Miss_Workflow.tikz}
+    }
+    \caption{Second workflow overview with some more details}
+    \label{fig_3_Workflow}
+\end{sidewaysfigure}
+With these 
+inputs \emph{missioninformer} generates interpolation models for states and 
+for gradients. In order to get the mass of cruise segment fuel,  
+its equation is solved. This equation requires the state 
+surrogate models to be called. In fact, the solving of 
+state cruise segment fuel equation is numerical and iterative and thus requires 
+multiple function calls. In other words,  
+solving the cruise segment fuel equation once, invokes 
+the surrogate models multiple times. The gradients of 
+the cruise segment fuel mass needs the state and the gradient 
+interpolation models and also invokes both models 
+multiple times for one solution. Contrary to the 
+generation of the interpolation models, the invocation of 
+the already calculated interpolation model is not 
+computationally costly. As mentioned, a deeper insight into 
+the whole process is provided in 
+chapter \ref{chap_Methodlogy}. Once the state and gradients 
+of the cruise segment fuel mass are calculated they are written to 
+hard disk as output.
+
+
+    

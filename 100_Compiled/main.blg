@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: plain.bst
+Database file #1: 3_Bibtex/bib.bib
+Warning--to sort, need author or key in noauthor_homepage_2021
+Warning--to sort, need author or key in noauthor_scipys_2021
+Warning--to sort, need author or key in noauthor_numpys_2021
+Warning--to sort, need author or key in noauthor_rbf_2021
+Warning--empty journal in feagin_delta_1978
+Warning--empty booktitle in gortz_collaborative_2016
+Warning--empty booktitle in ilic_goal_2013
+Warning--empty journal in mccullers_aircraft_1984
+Warning--empty booktitle in merle_high-fidelity_2019
+You've used 31 entries,
+            2118 wiz_defined-function locations,
+            670 strings with 10829 characters,
+and the built_in function-call counts, 10825 in all, are:
+= -- 991
+> -- 682
+< -- 1
++ -- 276
+- -- 242
+* -- 864
+:= -- 1842
+add.period$ -- 92
+call.type$ -- 31
+change.case$ -- 212
+chr.to.int$ -- 0
+cite$ -- 40
+duplicate$ -- 356
+empty$ -- 773
+format.name$ -- 242
+if$ -- 2173
+int.to.chr$ -- 0
+int.to.str$ -- 31
+missing$ -- 29
+newline$ -- 152
+num.names$ -- 54
+pop$ -- 254
+preamble$ -- 1
+purify$ -- 183
+quote$ -- 0
+skip$ -- 223
+stack$ -- 0
+substring$ -- 480
+swap$ -- 38
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 120
+warning$ -- 9
+while$ -- 78
+width$ -- 33
+write$ -- 322
+(There were 9 warnings)

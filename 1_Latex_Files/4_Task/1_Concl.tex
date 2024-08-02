@@ -1,0 +1,197 @@
+\chapter{Discussion}
+The \emph{missioninformer}, a tool, was 
+proposed to  help to fulfill the  
+environmental demands for reducing air traffic pollution. Clearly, the aircraft 
+sector contributed and contributes 
+to the current environmental crisis which we 
+are facing. Since an aircraft has become 
+indispensable, not only for the individual, 
+but also for the global economy, the solution 
+for a healthier environment cannot be 
+banning aircraft, but rather improving it 
+with regard to CO2, NOx and SO2 emissions. 
+The \emph{missioninformer}, a lightweight tool was 
+written from scratch. 
+Its major task is 
+to calculate the consumed fuel for
+one or multiple individual 
+missions for one aircraft. For the most 
+important part of the mission, the cruise segment, 
+physics-based equations are applied. In section \ref{sec_Solve_ODE}
+they are introduced, the precision 
+with which they are solved is satisfactory and 
+is presented in section \ref{sec_Solve_ODE_Methods}.
+They are 
+fed with interpolated aerodynamic data, where 
+the interpolation models were generated 
+by using high fidelity RANS-based training samples.\newline
+
+
+The next step \emph{missioninformer} 
+went, was also to include the remaining 
+flight segments by employing fuel fractions.
+All the used fuel fractions 
+were given in section \ref{sec_Cruise_Mission_Fuel}
+in table \ref{tab_1}. 
+At this stage, the \emph{missioninformer} 
+can predict the fuel required for a whole 
+flight mission. For real world applications, 
+the user must be able to define the flown mission 
+himself. The \emph{missioninformer} meets that need 
+and in a structured way, so less effort is required, 
+which is described in section \ref{sec_introduc_Miss} \newline
+
+
+Since the \emph{missioninformer} is a leightweight code and 
+because it can be used as a black box, it already
+can be implemented easily into a global gradient
+free optimization workflow. Since gradient-based 
+optimization is known to be faster, especially
+with a high number of design variables, 
+\emph{missioninformer} was enhanced with the ability 
+to calculate gradients. These are gradients of 
+the fuel mass of the whole flight mission 
+with respect to all arbitrarily given shape parameters. 
+To guarantee a high accuracy of  \emph{missioninformer}'s 
+state and gradient solutions many different studies 
+were conducted.\newline
+
+In order to solve the ODE for the cruise flight segment, two tested solvers exhibited 
+particular high accuracies in their results. One of them (\emph{RK45}) also 
+demanded few integration steps and thus excels 
+in terms of execution time. Therefore, 
+(\emph{RK45}) is well suited for research and industrial applications.
+Based on this reasoning it is used as a standard ODE solver.\newline
+
+
+For the gradient calculation, by employing central differencing, 
+it can be stated that the iterative indirect method was found to be more
+stable. Also, choosing the step-size of $1\mathrm{e}{-5}$ 
+could be proven to be optimal. 
+This value neither
+leads to numerical instabilities nor does it 
+not comply with the accuracy requirements.
+Therefore, the default method for solving the gradients
+with respect to the shape parameters
+is the indirect method with its default step-size of $1\mathrm{e}{-5}$.\newline 
+
+Having compared \emph{SciPy}'s RBF and \emph{SMARTy}'s Kriging (Gaussian)
+and TPS
+interpolation models for different model options, the following can be stated.
+Clearly, there are differences in the
+outcome of the predicted values and trends for the
+desired output variables $LoD, TSFC , AOA$.
+As a consequence, once more it can be said that 
+the choice of the surrogate model heavily
+determines the results of any further calculation. \newline
+
+After having performed a computational intensive 
+model selection investigation, the following 
+conclusion is made.
+No real winner 
+could be found out for the options. However, 
+using regularization and an augmentation 
+of value $1$ can be recommended. If a final 
+decision had to be made,
+the TPS model with regularization
+and an augmentation of $1$ should be chosen.
+Note that performing this model selection study 
+took more than 3 days on the workstation described 
+in section \ref{sec_Motivation}.
+This means performing
+model selection for each new set of training samples 
+within an aerodynamic optimization 
+is not feasible. Therefore, TPS with 
+active regularization and an augmentation 
+of $1$ is set as the default model 
+in \emph{missioninformer}.\newline
+
+For the sake 
+of applicational feasibility, execution time for the \emph{missioninformer}
+with different surrogate models and their respective 
+different intern parameters was measured. 
+With that it can be stated, the \emph{missioninformer}
+suits well for a fast and easy implementation 
+into a gradient-based and gradient-free 
+optimization workflow, where it completes 
+its calculation within few minutes. 
+Having introduced the \emph{missioninformer} broadly, 
+it clearly can be considered as a possible tool 
+at hand to be integrated into new digital design methods 
+to reduce the 
+negative impact of aviation on the environment, which 
+can not be neglected nor overlooked.
+ 
+
+% -------------------Conclusions and outlook--------------------------------------
+
+\chapter{Conclusions and outlook}
+A tool for calculating the total fuel mass and 
+its gradient w.r.t. arbitrary shape parameter and for any 
+user defined mission or multiple missions is presented.
+It was generated from scratch and can be used 
+as black box. 
+It could be observed, that in case of two 
+missions, the runtime was between $50$ to $800$ seconds 
+(figure \ref{fig_112}) depending on the employed 
+interpolation models and including the gradient computation.
+ The following surrogate models 
+were intensively investigated with different options:
+RBF from the \emph{SciPy} library, Kriging (Gaussian) and TPS
+from \emph{DLR}'s toolbox \emph{SMARTy}. RBF 
+could clearly be filtered out from the list of the 
+attractive surrogate model options, mainly 
+due to its long execution times and 
+highly options dependent results. In order to solve 
+the ODE, which is required for 
+computing the fuel fraction of the
+cruise segment, different numerical solvers were used. 
+By having 
+applied simplifications an analytical solution of 
+the ODE was introduced. The analytical solution 
+was compared with different numerical solvers solutions. 
+With these comparisons, 
+statements about the accuracy of the numerical 
+ODE solver could be made. The solution 
+of the total fuel mass incorporates
+mass snowball effects though the explained 
+fix-point iteration. For the gradients, also 
+an analytical approach was desired.
+%
+However, after comparing the analytically 
+determined gradients with central finite 
+differences results, the assumption was made for the derivation
+were found to be not tenable.
+%
+A detailed analysis 
+for finding an appropriate value for the step-size 
+of the central differencing scheme was undertaken. Its 
+results could be shown to be unambiguous. \newline 
+
+As an outlook, the analytical solution for the gradients 
+should be revisited. It failed due to the elaboration of the mass
+term. It is assumed that 
+there is a way to reformulate this term and thus obtain 
+the gradients analytically. An alternative could be
+employing automatic differentiation.
+Up to now, only the most important flight segment, the cruise 
+segment is described by equations which 
+are based on physical observations. The currently 
+used fuel fractions for the other  
+flight segments could be replaced
+by physics-based equations as well. Also in practice,
+step-climbs are performed 
+in order to fly with an optimal $LoD$. This means, 
+the assumption of constant altitude,
+which  is made in \emph{missioninformer} 
+needs to be adapted. Next, state and gradient calculations are
+not consistent due to the chosen approach with multiple
+independent surrogate models. \emph{Missioninformer} should be 
+tested in an aerodynamic gradient-based optimization 
+to find out how many 
+training points are necessary to achieve significant
+reduction in the missions fuel consumption. Finally, 
+the gradients of the missions fuel w.r.t. 
+the structural mass needs to be calculated in order 
+to use \emph{missioninformer} within 
+a multi-disciplinary-optimization workflow.

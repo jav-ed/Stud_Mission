@@ -1,0 +1,19 @@
+
+
+0.1) Matla, Python Ableitung
+0.2) Eigene Ableitung
+0.3) Vorarbeit: Compare, welcher Ableiter
+1) Indirekte Version
+2) Direkte Version
+3) Indirekte Gradienten
+4) Direkte Gradienten
+5) FInite Differnezen Problem und Lösung
+Erste Herangehensweise und wieso das nicht klappt
+Andreis heransgehensweise und Vergleich mit Direktem Gradienten
+Verfahren (Analytisch)
+
+6) 	Stepsize Investigation mit Andreis Idee, genommen 
+	ersten Shape Parameter also shape_Param[0]
+
+7) 	Hürden beim Schnitt für das Plotten der 
+	Interpolationsmodelle

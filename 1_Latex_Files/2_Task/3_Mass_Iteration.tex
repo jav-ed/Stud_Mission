@@ -1,0 +1,284 @@
+
+\section{Mission fuel mass iteration}
+\label{sec_Fuel_Mass_iter}
+
+For solving the cruise fuel burn equation \eqref{eq_10} 
+the present total mass of the airplane $m_s$, which 
+is the starting mass for the cruise segment, is required.
+However, the cruise starting mass $m_s$ is not known beforehand.
+It depends on the fuel mass of the remaining segments fuel masses. 
+These are the fuel 
+weights of descent, landing and taxi to parking. As explained 
+in section \ref{sec_Cruise_Mission_Fuel}, only the 
+cruise fuel weight $m_{fe}$ for
+the given mission or missions is calculated by solving the ODE 
+\eqref{eq_10}. In this section $m_{fe}$ is denoted as $m_{cr}$
+in order to highlight that it is only the fuel mass for 
+the cruise segment. The required fuel masses for the remaining
+flight segments are obtained through empirical fuel fractions 
+from table \ref{tab_1}. The process for computing the total fuel
+mission mass 
+$m_f$, the cruise fuel $m_{cr}$ and the resulting 
+cruise starting mass $m_s$  can be viewed 
+in the figure \ref{fig_4_Mass_Workflow}.\newline 
+%
+%
+\begin{figure} [!h]
+    \resizebox{\textwidth}{!}{
+    \input{2_Figures/2_Task/2_Mass_Workflow.tikz}
+    }
+    \caption{Initial mass and mass fix-point iteration workflow}
+    \label{fig_4_Mass_Workflow}
+\end{figure}
+%
+%
+
+Since the cruise starting mass $m_s$ is not known 
+before knowing the cruise and total fuel masses ($m_{cr}, m_{f}$), 
+the initial cruise starting and total fuel mass ($m_{s,0}, m_{f,0}$)
+are estimated based on the equations \eqref{eq_17} to 
+\eqref{eq_19}. The variables for the equations 
+$m_{takeoff,max},\, f_{zero},\, f_{eng,start}$
+$m_{oe},\, m_{payload}$ are denoted 
+as maximal takeoff, zero fuel, 
+engine start, operating empty weight and design
+payload, respectively. The fuel fractions 
+$fr_1 \,, fr_2\,,fr_3 \,, fr_4$ are for the following 
+flight segments, after engine start, taxi to runway, takeoff 
+and climb and acceleration, respectively.
+
+\begin{equation}
+    \label{eq_17}
+    f_{zero} = m_{oe} + m_{payload}
+\end{equation}
+
+\begin{equation}
+    \label{eq_18}
+    m_{f,0} = m_{takeoff,max} - f_{zero}
+\end{equation}
+
+
+\begin{equation}
+    \label{eq_19}
+    m_{s,0} = \left(f_{zero} + f_{eng,start}\right) \, fr_1 \, fr_2\,fr_3 \, fr_4
+\end{equation}
+
+
+
+By proving $m_{s,0}$ to the cruise fuel ODE 
+\eqref{eq_10} the corresponding cruise fuel $m_{cr}$ is 
+obtained, which is passed to the block \emph{mass recalculation}.
+Here the new cruise starting and total fuel masses 
+($m_{s,n}, m_{f,n}$) are calculated. For computing 
+former ($m_{s,n}$) the equation \eqref{eq_19} is still 
+valid, however, computing the new total fuel mass $m_{f,n}$
+two different possibilities were found. One by using all 
+known mass relationships straight forward and solving $m_{f,n}$ 
+numerically, e.g. the Newtons method. The second 
+method was obtained by inserting the 
+mass equations into each and 
+performing transformations. With that 
+an analytical solution was obtained. Here, only 
+the derivation of the analytical solution shall 
+be explained.\newline 
+
+The demand for  
+$m_{f,n}$ is stated in equation \eqref{eq_20}, where 
+$m_{after,cr}$ is the mass after
+the cruise segment and $ fr_{cr}$ is introduced as auxiliary
+fuel fraction 
+for the cruise segment and is given 
+in equation \eqref{eq_20_Cruise_Fraction}. In words, the mass after 
+the cruise segment divided by the mass after acceleration 
+and climb must be equal to the cruise fuel fraction.
+
+
+\begin{equation}
+    \label{eq_20_Cruise_Fraction}
+    fr_{cr} =  \frac{m_s - f_{cr}}{m_s}
+\end{equation}
+
+\begin{equation}
+    \label{eq_20}
+    \frac{m_{after,cr}}{m_{s} }- fr_{cr} \overset{!}{=} 0
+\end{equation}
+
+The mass after the cruise segment $m_{after,cr}$
+ can be written in 
+the form of equation \eqref{eq_21}, where 
+$fr_{reser}$ is the known fuel reserve fraction, 
+provided in table 
+\ref{tab_1}. The fuel fractions 
+$fr_5\,, fr_6\, , fr_7$ stand for taxi to parking,
+landing and descent, respectively and are also 
+given in table \ref{tab_1}. The unknown
+in this equation is the new total fuel mass 
+$m_{f,n}$. Applying insertions and mathematical 
+transformations with the equations \eqref{eq_19} to 
+\eqref{eq_21}, $m_{f,n}$ can be written as 
+equation \eqref{eq_23}, where $fa$ as an 
+auxiliary term is given in equation \eqref{eq_22}.
+
+
+\begin{equation}
+    \label{eq_21}
+    m_{after,cr} = \frac{f_{zero} + m_{f,n} \, fr_{reser}}
+            {fr_5\, fr_6\, fr_7} = 0
+\end{equation}
+
+\begin{equation}
+    \label{eq_22}
+    fa = f_{zero} \, fr_{cr} \, fr_1 \, fr_2\,fr_3 \, fr_4 \, 
+    fr_5\, fr_6\, fr_7
+\end{equation}
+
+\begin{equation}
+    \label{eq_23}
+    m_{f,n} = \frac{fa - f_{zero}}{f_{reser} -fr_{cr} 
+    \,fr_1 \, fr_2\,fr_3 \, fr_4 \, 
+    fr_5\, fr_6\, fr_7 }
+\end{equation}
+
+
+% ==================================================
+% =========== RECAP ===============================
+% ==================================================
+
+To recap, after an initial guess for
+starting cruise and total fuel mass 
+$m_{s,0}, m_{f,0}$, they are passed 
+to the ODE solver, which outputs 
+its corresponding cruise fuel weight $m_{cr}$.
+With the equation \eqref{eq_20_Cruise_Fraction} 
+an auxiliary fuel fraction for the cruise 
+segment is calculated and used in the 
+\emph{mass recalculation} box, depicted
+ in figure \ref{fig_4_Mass_Workflow}.
+Here by employing the equations \eqref{eq_19}
+and \eqref{eq_23} the new cruse starting 
+and total fuel mass $m_{s,n}, m_{f,n}$ are 
+obtained, respectively.
+This process is repeated as long 
+the convergence criteria 
+$\Delta =  m_{f,n} -  m_{f,old} \leq \epsilon$ is met, where 
+$\epsilon$ is a tolerance parameter. 
+The relative and absolute tolerance parameter are 
+set to be $5\mathrm{e}{-5}$ \cite{noauthor_numpys_2021}.
+Such an iterative method is also called \emph{fix-point iteration}.
+Since the described workflow is iterative, the resulting 
+change and their interdependencies  (mass snowball effect)
+are taken into account.
+In case a convergence is achieved, the final 
+values for the cruise starting, cruise fuel and 
+total fuel mass \ref{fig_4_Mass_Workflow}
+are found ($m_{s}*, m_{cr}*, m_f*$).\newline
+
+As mentioned above, the problem \eqref{eq_20} can 
+be solved numerically or analytically. In order 
+to verify the analytical solution it 
+has been compared successfully with the 
+numerical Newtons' method. The presented 
+workflow defining the 
+auxiliary term $fr_{cr}$ 
+\eqref{eq_20_Cruise_Fraction} can be 
+further simplified by directly inserting 
+$fr_{cr}$ into the equations. This 
+results into equation \eqref{eq_63} 
+and its derivation with respect to 
+the shape parameter is explained 
+in more details in section \ref{sec_Shape_Gradients}. 
+The results of 
+this direct (without auxiliary term) 
+approach differed marginally 
+from the previous auxiliary method.
+Therefore, \emph{Matlab} and \emph{SymPy}
+(open source 
+Python library) were used in order 
+to verify the undertaken 
+mathematical transformations. The 
+symbolic results confirmed the handcrafted 
+analytical solution.\newline
+
+
+One interesting finding could be observed. 
+Consider the
+figure \ref{fig_4_Mass_Workflow}, which shows 
+the reoccurring or iterative process,  
+thus the fix-point iteration.
+Depending on applying
+the auxiliary or the direct version, different 
+numbers of iterations were needed to 
+get to the final solutions for 
+$m_{s}*, m_{cr}*, m_f*$. As mentioned, also the  
+end values for $m_{s}*, m_{cr}*, m_f*$ 
+would differ, however only around the 10th 
+decimal place. By changing the missions 
+definitions, it could be observed that in most cases 
+the direct version required more iterations to 
+converge. In some cases, more than two
+to four times more iterations 
+were required. Thus, \emph{missioninformer's} default 
+method to solve equation \eqref{eq_20} is 
+by employing the auxiliary term $fr_{cr}$.\newline
+
+
+
+
+
+% ==================================================
+% =========== Check violation ======================
+% ==================================================
+Finally, the \emph{missioninformer's} \emph{constraint 
+violation check} shall be 
+elaborated. Since the user is completely free 
+in defining the desired mission or missions, it is 
+possible for an unpracticed user to define an
+unrealistic high range or payload. Also, 
+possible is that, e.g. the predicted
+$\tilde{LoD}$ with the preliminary aircraft synthesis
+software turned out to be too optimistic and at the 
+detailed Reynold-Averaged-Navier-Stokes-Equations-
+based (RANS) aerodynamics analysis. In such cases 
+the required fuel masses or other weights can exceed 
+the mass constraints set by the top level aircraft 
+requirements (TLAR) and the preliminary design.
+ Therefore, verifying whether 
+given constrains are violated is necessary. The 
+workflow with the \emph{constraint violation check} is 
+depicted in figure \ref{fig_5_Constraint_Violation}.
+As it can be observed, it is performed after each mass 
+recalculation. 
+%
+% ==============================================
+% ========== Constraint Viol Workfflow =========
+% ==============================================
+\begin{figure} [!h]
+    \hspace*{-4cm} 
+    \resizebox{1.2\textwidth}{!}{
+    \input{2_Figures/2_Task/3_Const_Violation.tikz}
+    }
+    \caption{Second workflow with some more details}
+    \label{fig_5_Constraint_Violation}
+\end{figure}
+%
+%
+In case of a found constraint 
+violation, a colored warning statement will be given 
+to highlight an eventual inconsistency with 
+the possible incorrectness of 
+the mission inputs definition. The following 
+checks are made, where 
+$m_{takeoff,max}, \,m_{eng,start},$ $m_{land,max}, \, m_{aft,desc}, $
+$m_{f,max}, \, m_{f}$
+are denoted as the weights of 
+maximal takeoff, engine start, maximal landing, after 
+descent, maximal fuel and actual required total fuel, respectively.
+
+\begin{equation}
+    \label{eq_21_Check_viloation}
+        \begin{aligned}
+            m_{takeoff,max} <  m_{eng,start}\\
+            m_{land,max} < m_{aft,desc}\\
+            m_{f,max} < m_{f}
+        \end{aligned}
+\end{equation}

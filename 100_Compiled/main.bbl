@@ -1,0 +1,152 @@
+\begin{thebibliography}{10}
+
+\bibitem{noauthor_homepage_2021}
+Homepage - {SUAVE}, 2021.
+
+\bibitem{noauthor_numpys_2021}
+{NumPy}'s allclose, August 2021.
+
+\bibitem{noauthor_rbf_2021}
+{RBF} - {SciPy}, August 2021.
+
+\bibitem{noauthor_scipys_2021}
+{SciPy}'s {ODE} solver, August 2021.
+
+\bibitem{ahmed_surrogate-based_2009}
+M.~Ahmed and N.~Qin.
+\newblock Surrogate-{Based} {Aerodynamic} {Design} {Optimization}: {Use} of {Surrogates} in {Aerodynamic} {Design} {Optimization}.
+\newblock {\em International Conference on Aerospace Sciences and Aviation Technology}, 13(AEROSPACE SCIENCES):1--26, May 2009.
+
+\bibitem{betts_survey_1998}
+John~T Betts.
+\newblock Survey of numerical methods for trajectory optimization.
+\newblock {\em Journal of guidance, control, and dynamics}, 21(2):193--207, 1998.
+
+\bibitem{dabas_error-based_2019}
+Benoit Dabas, Nathalie Bartoli, Thierry Lefebvre, Francois Gallard, Anne Gazaix, Thierry~Y. Druot, and Damien Guénot.
+\newblock Error-{Based} {Adaptive} {Coupling} {Process} {Between} {Multipoint} {High}-{Fidelity} {Aerodynamics} and {Mission} {Performance} for {Shape} {Optimization} in the {MDA}-{MDO} {Project}.
+\newblock In {\em {AIAA} {Aviation} 2019 {Forum}}, Dallas, Texas, June 2019. American Institute of Aeronautics and Astronautics.
+
+\bibitem{eldred_second-order_2004}
+Michael Eldred, Anthony Giunta, and S.~Collis.
+\newblock Second-{Order} {Corrections} for {Surrogate}-{Based} {Optimization} with {Model} {Hierarchies}.
+\newblock In {\em 10th {AIAA}/{ISSMO} {Multidisciplinary} {Analysis} and {Optimization} {Conference}}, Albany, New York, August 2004. American Institute of Aeronautics and Astronautics.
+
+\bibitem{feagin_delta_1978}
+Richard~C Feagin and William~D Morrison.
+\newblock Delta method, an empirical drag buildup technique.
+\newblock 1978.
+
+\bibitem{goertz_overview_2020}
+Stefan Goertz, Mohammad Abu-Zurayk, Caslav Ilic, Tobias~F. Wunderlich, Stefan Keye, Matthias Schulze, Christoph Kaiser, Thomas Klimmek, Özge Süelözgen, Thiemo Kier, Andreas Schuster, Sascha Daehne, Michael Petsch, Dieter Kohlgrüber, Jannik Häßy, Robert Mischke, Alexander Weinert, Philipp Knechtges, Sebastian Gottfried, Johannes Hartmann, and Benjamin Fröhler.
+\newblock Overview of {Collaborative} {Multi}-{Fidelity} {Multidisciplinary} {Design} {Optimization} {Activities} in the {DLR} {Project} {VicToria}.
+\newblock In {\em {AIAA} {AVIATION} 2020 {FORUM}}, VIRTUAL EVENT, June 2020. American Institute of Aeronautics and Astronautics.
+
+\bibitem{gray_openmdao_2019}
+Justin~S. Gray, John~T. Hwang, Joaquim R. R.~A. Martins, Kenneth~T. Moore, and Bret~A. Naylor.
+\newblock {OpenMDAO}: an open-source framework for multidisciplinary design, analysis, and optimization.
+\newblock {\em Structural and Multidisciplinary Optimization}, 59(4):1075--1104, April 2019.
+
+\bibitem{greitzer_design_2010}
+EM~Greitzer.
+\newblock Design {Methodologies} for {Aerodynamics}, {Structures}, {Weight}, and {Thermodynamic} {Cycles}.
+\newblock {\em Cooperative Agreement No. NNX08AW63A}, 2010.
+
+\bibitem{gortz_collaborative_2016}
+S.~Görtz, {\textbackslash}textbackslashvC Ilić, M.~Abu-Zurayk, R.~Liepelt, J.~Jepsen, T.~Führer, R.~Becker, J.~Scherer, T.~Kier, and M.~Siggel.
+\newblock Collaborative {Multi}-{Level} {MDO} {Process} {Development} and {Application} to {Long}-{Range} {Transport} {Aircraft}.
+\newblock 2016.
+
+\bibitem{ilic_goal_2013}
+Caslav Ilic.
+\newblock Goal function in {Digital}-{X}.
+\newblock Braunschweig, Germany, September 2013. DLR.
+
+\bibitem{kao_modular_2015}
+Jason~Y. Kao, John~T. Hwang, Joaquim R. R.~A. Martins, Justin~S. Gray, and Kenneth~T. Moore.
+\newblock A {Modular} {Adjoint} {Approach} to {Aircraft} {Mission} {Analysis} and {Optimization}.
+\newblock In {\em Proceedings of the {AIAA} {Science} and {Technology} {Forum} and {Exposition} ({SciTech})}, Kissimmee, FL, January 2015.
+
+\bibitem{krige_statistical_1951}
+Daniel~G Krige.
+\newblock A statistical approach to some basic mine valuation problems on the {Witwatersrand}.
+\newblock {\em Journal of the Southern African Institute of Mining and Metallurgy}, 52(6):119--139, 1951.
+\newblock Publisher: Southern African Institute of Mining and Metallurgy.
+
+\bibitem{lee_contribution_2021}
+D.S. Lee, D.W. Fahey, A.~Skowron, M.R. Allen, U.~Burkhardt, Q.~Chen, S.J. Doherty, S.~Freeman, P.M. Forster, J.~Fuglestvedt, A.~Gettelman, R.R. De~León, L.L. Lim, M.T. Lund, R.J. Millar, B.~Owen, J.E. Penner, G.~Pitari, M.J. Prather, R.~Sausen, and L.J. Wilcox.
+\newblock The contribution of global aviation to anthropogenic climate forcing for 2000 to 2018.
+\newblock {\em Atmospheric Environment}, 244:117834, January 2021.
+
+\bibitem{liem_multimission_2015}
+Rhea~P. Liem, Gaetan K.~W. Kenway, and Joaquim R. R.~A. Martins.
+\newblock Multimission {Aircraft} {Fuel}-{Burn} {Minimization} via {Multipoint} {Aerostructural} {Optimization}.
+\newblock {\em AIAA Journal}, 53(1):104--122, January 2015.
+
+\bibitem{liem_aerostructural_2013}
+Rhea~P. Liem, Charles~A. Mader, Edmund Lee, and Joaquim R. R.~A. Martins.
+\newblock Aerostructural design optimization of a 100-passenger regional jet with surrogate-based mission analysis.
+\newblock In {\em 2013 {Aviation} {Technology}, {Integration}, and {Operations} {Conference}}, Los Angeles, CA, August 2013. American Institute of Aeronautics and Astronautics.
+
+\bibitem{liem_surrogate_2015}
+Rhea~P. Liem, Charles~A. Mader, and Joaquim~R.R.A. Martins.
+\newblock Surrogate models and mixtures of experts in aerodynamic performance prediction for aircraft mission analysis.
+\newblock {\em Aerospace Science and Technology}, 43:126--151, June 2015.
+
+\bibitem{martins_review_2013}
+Joaquim R. R.~A. Martins and John~T. Hwang.
+\newblock Review and {Unification} of {Methods} for {Computing} {Derivatives} of {Multidisciplinary} {Computational} {Models}.
+\newblock {\em AIAA Journal}, 51(11):2582--2599, November 2013.
+
+\bibitem{matheron_principles_1963}
+Georges Matheron.
+\newblock Principles of geostatistics.
+\newblock {\em Economic geology}, 58(8):1246--1266, 1963.
+\newblock Publisher: Society of Economic Geologists.
+
+\bibitem{mccullers_aircraft_1984}
+LA~McCullers.
+\newblock Aircraft configuration optimization including optimized flight profiles.
+\newblock 1984.
+
+\bibitem{meckesheimer_computationally_2002}
+Martin Meckesheimer, Andrew~J. Booker, Russell~R. Barton, and Timothy~W. Simpson.
+\newblock Computationally {Inexpensive} {Metamodel} {Assessment} {Strategies}.
+\newblock {\em AIAA Journal}, 40(10):2053--2060, October 2002.
+
+\bibitem{merle_high-fidelity_2019}
+Andrei Merle, Caslav Ilic, Mohammad Abu-Zurayk, Jannik Häßy, Richard-Gregor Becker, Matthias Schulze, and Thomas Klimmek.
+\newblock High-{Fidelity} {Adjoint}-based {Aircraft} {Shape} {Optimization} with {Aeroelastic} {Trimming} and {Engine} {Coupling}.
+\newblock September 2019.
+
+\bibitem{perez_pyacdt_2008}
+Ruben Perez and Joaquim~RRA Martins.
+\newblock {pyACDT}: {An} object-oriented framework for aircraft design modelling and multidisciplinary optimization.
+\newblock In {\em 12th {AIAA}/{ISSMO} {Multidisciplinary} {Analysis} and {Optimization} {Conference}}, page 5955, 2008.
+
+\bibitem{roskam_airplane_1986}
+Jan Roskam.
+\newblock {\em Airplane design}.
+\newblock DARcorporation, Lawrence, Kan, 1986.
+
+\bibitem{sacks_design_1989}
+Jerome Sacks, William~J. Welch, Toby~J. Mitchell, and Henry~P. Wynn.
+\newblock Design and {Analysis} of {Computer} {Experiments}.
+\newblock {\em Statistical Science}, 4(4), November 1989.
+
+\bibitem{simpson_kriging_2001}
+Timothy~W Simpson, Timothy~M Mauery, John~J Korte, and Farrokh Mistree.
+\newblock Kriging models for global approximation in simulation-based multidisciplinary design optimization.
+\newblock {\em AIAA journal}, 39(12):2233--2241, 2001.
+
+\bibitem{torenbeek_synthesis_1982}
+Egbert Torenbeek.
+\newblock {\em Synthesis of {Subsonic} {Airplane} {Design}}.
+\newblock Springer Netherlands, Dordrecht, 1982.
+
+\bibitem{viana_special_2014}
+Felipe A.~C. Viana, Timothy~W. Simpson, Vladimir Balabanov, and Vasilli Toropov.
+\newblock Special {Section} on {Multidisciplinary} {Design} {Optimization}: {Metamodeling} in {Multidisciplinary} {Design} {Optimization}: {How} {Far} {Have} {We} {Really} {Come}?
+\newblock {\em AIAA Journal}, 52(4):670--690, April 2014.
+
+\end{thebibliography}

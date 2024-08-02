@@ -1,0 +1,187 @@
+\newpage
+\FloatBarrier
+\section{Conducting a step-size-study}
+\label{sec_Step_Size_Study}
+In section \ref{subsec_CDS} the reasons for 
+the necessity of a step-size investigation 
+has been described. In short it 
+can be said, a wrong chosen step-size 
+leads to not useable gradient values 
+for the optimization. In this section the 
+results of the performed step-size 
+study shall be shown and elaborated.        
+In order to calculate the gradients 
+using different step-sizes, the 
+procedure given in 
+table \ref{tab_6} was employed.
+The left side shows the interval 
+from which the step-sizes were taken,  
+on the right side, the number of evenly distributed 
+points, which shall be used as the step size, 
+are given. The investigation was conducted for 
+2 different missions as explained in section 
+\ref{subsec_CDS}. Both missions can be 
+seen in table \ref{tab_5_Mission_Step_Size}.
+Mission 1 encountered 
+or failed the \emph{constraint violation check}, which 
+is explained in section \ref{sec_Fuel_Mass_iter}.
+In cases, where 
+the \emph{constraint violation check} displayed warning 
+messages, the respective mission required 
+a high number of fix-point iteration. Mostly, the limit 
+of maximal 500 allowed iterations was reached.
+In contrast, mission 2 successfully passed 
+the \emph{constraint violation check} and thus no 
+warning messages were encountered. Also, 
+the number of iterations were much lower.
+\begin{table}[!h]
+    \centering
+        \begin{tabular}{l c}
+            \multicolumn{1}{p{2cm}}{\textbf{Intervall}} &
+            \multicolumn{1}{p{2cm}}{\textbf{\# points}}\\
+            \hline
+            $[1\mathrm{e}{-1} \; ; 1\mathrm{e}{-3} ]$ & $20$  \\
+            $[1\mathrm{e}{-3} \; ; 1\mathrm{e}{-4} ]$ & $10$ \\
+            $[1\mathrm{e}{-4} \; ; 1\mathrm{e}{-5} ]$ & $10$\\
+            $[1\mathrm{e}{-5} \; ; 1\mathrm{e}{-6} ]$ & $15$\\
+            $[1\mathrm{e}{-6} \; ; 1\mathrm{e}{-7} ]$ & $15$\\
+            $[1\mathrm{e}{-7} \; ; 1\mathrm{e}{-8} ]$ & $10$\\
+        \end{tabular}
+        \caption{Chosen step-sizes }
+        \label{tab_6}
+\end{table}
+
+
+Furthermore, two different values for the tolerance 
+parameter where used for the above-mentioned investigations.
+For the first examination the absolute 
+and relative tolerance parameter \cite{noauthor_numpys_2021} for 
+the direct and indirect gradient calculation 
+workflows, which are explained in section \ref{subsec_CDS}, 
+are set equal to $5\mathrm{e}{-5}$. For the 
+second study, for the direct method, the 
+tolerance parameter were set to $5\mathrm{e}{-6}$, 
+which can be done since the direct method 
+can reach finer tolerances as 
+explained in section \ref{subsec_CDS}.
+The CDS is computed in application for each
+shape parameter. In this study, only five 
+selected parameters were investigated.
+ All the upcoming 
+results are achieved by employing \emph{SciPy}'s RBF
+with
+multiquadric as kernel, which is given 
+in equation \eqref{eq_34}, as the underlying 
+surrogate model generator. \newline 
+
+Note that not each 
+analyzed result can be shown here, since 
+the number of these would claim too many pages.
+The outcomes, which describes the 
+gained finding will be highlighted instead.
+For this propose, the result will be
+reviewed for the direct and indirect method, where 
+the direct method has a tolerance parameter of $5\mathrm{e}{-6}$.
+The results are only shown for mission 2
+and for one shape parameter.\newline
+
+
+The first interesting finding is that both 
+methods, direct and indirect, 
+retain a so-called plateau with 
+respect to step size variations.
+In the region of the plateau, 
+the types of error, mentioned 
+earlier, are in balance. In other words, 
+within the plateau, no type of 
+error dominates and the total value is small.
+ In case of 
+a too small step-size the round-off 
+error becomes such high, that numerical 
+instability is the consequence. In contrast,  
+a too large step-size results in very 
+high truncation error. In both cases, the 
+result by using CDS cannot be considered 
+to approximate the real gradient value.
+This plateau  
+was searched for, in order to be able to  
+make statements and recommendations about the 
+value for the step-size. This observation 
+was seen in all tested cases for mission 2.
+The figure \ref{fig_16} and \ref{fig_17} 
+show the plateau for the direct and 
+indirect method for mission 2, respectively.
+It can be observed, that for both 
+methods, direct and indirect, the  
+plateau can bee seen around the 
+step-size of $1\mathrm{e}{-5}$. This 
+result was found also for 
+remaining step-size studies  
+the different shape parameters.\newline 
+
+% =======================================================================
+% ========================== SHAPE 0  =============================================
+% =======================================================================
+% ------------------- SHape -0 Miss 1----------------------
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =0.9\textwidth]{2_Figures/3_Task/1_Steps/Shape_0/Dir_Miss_2_RBF.pdf}
+    \caption{Step-Size-Investigation, Mission 2, Shape parameter $0$, Applied method: Direct, Unequal tolerance parameter}
+    \label{fig_16}
+\end{figure}
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =0.9\textwidth]{2_Figures/3_Task/1_Steps/Shape_0/Indirect_Miss_2_RBF.pdf}
+    \caption{Step-Size-Investigation, Mission 2, Shape parameter $0$, Applied method: Indirect, Unequal tolerance parameter}
+    \label{fig_17}
+\end{figure}
+
+\FloatBarrier
+However, a clear plateau could only 
+be detected for mission 2. The deviation 
+of the gradient with changing step-size
+for mission 1 
+was in the orders of $10^7 \,  kg/m$ and  $10^9\, kg/m$. 
+This leads to the conclusion, when 
+the \emph{constraint check violation} is 
+passed successfully, the step-size 
+of $1\mathrm{e}{-5}$ can be used for 
+the CDS gradient calculation. Otherwise, when 
+receiving warning statements by the 
+\emph{constraint check violation}, 
+not only can the step-size of $1\mathrm{e}{-5}$ 
+not be used, rather CDS as the method 
+for obtaining the gradients should not 
+be used. This because, when no plateau can 
+bee seen, there is no possibility to find 
+a reasonable required step-size.\newline
+
+
+Another conclusion which can be made is 
+by comparing the direct and indirect 
+results. The 
+indirect method seems to be more 
+stable within a broader step-size interval.
+Also, this occurrence could be seen in 
+for mission 2 for all tested shape parameters.
+Note the scaling of the y-axis, which 
+defined as 3 times the standard deviation. With this 
+in mind the stability 
+of the gradient by changing the step-size 
+within the plateau becomes more tangible.\newline 
+
+As summary, it can be stated that
+the iterative indirect method was found 
+to be more stable and choosing 
+the step-size of $1\mathrm{e}{-5}$
+could be proven to be optimal. This value
+neither leads to numerical 
+instabilities nor does it not comply 
+with the accuracy requirements. Therefore,
+the default method for solving 
+the gradients with respect to the shape 
+parameters is the indirect 
+method with its default step-size of 
+$1\mathrm{e}{-5}$.

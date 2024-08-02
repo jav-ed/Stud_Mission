@@ -1,0 +1,70 @@
+
+%%% Preamble Requirements %%%
+% \usepackage{geometry}
+% \usepackage{amsfonts}
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{tikz}
+
+% Optional packages such as sfmath set through python interface
+% \usepackage{sfmath}
+
+% \usetikzlibrary{arrows,chains,positioning,scopes,shapes.geometric,shapes.misc,shadows}
+
+%%% End Preamble Requirements %%%
+
+\input{/home/jav/Progs/Virt_Env/writing/lib/python3.12/site-packages/pyxdsm/diagram_styles.tex}
+\begin{tikzpicture}
+
+\matrix[MatrixSetup]{
+%Row 0
+\node [DataIO] (output_ode_Solv) {$\begin{array}{c}\text{initial starting} \\ \text{and mission fuel } \\ \text{mass } ($$m_{s,0}, m_{f,0})$$\end{array}$};&
+&
+\node [DataIO] (output_constr_Viol) {$\begin{array}{c}\text{mission input} \\ \text{file}\end{array}$};&
+&
+\\
+%Row 1
+\node [Function] (ode_Solv) {$\begin{array}{c}\text{ODE solver}\end{array}$};&
+\node [DataInter] (ode_Solv-mass_Calc) {$\begin{array}{c}$$m_{cr}$$\end{array}$};&
+&
+&
+\\
+%Row 2
+\node [DataInter] (mass_Calc-ode_Solv) {$\begin{array}{c}\text{new starting and} \\ \text{mission fuel mass } \\ (m_{s,n}, m_{f,n})\end{array}$};&
+\node [Function] (mass_Calc) {$\begin{array}{c}\text{mass recalculation}\end{array}$};&
+\node [DataInter] (mass_Calc-constr_Viol) {$\begin{array}{c}m_{s,n}, m_{f,n}\end{array}$};&
+&
+\node [DataIO] (right_output_mass_Calc) {$\begin{array}{c}m_{s}*, m_{cr}*, \\  m_{f}*\end{array}$};\\
+%Row 3
+&
+&
+\node [Function] (constr_Viol) {$\begin{array}{c}\text{check constraint} \\  \text{violation}\end{array}$};&
+&
+\\
+%Row 4
+&
+&
+&
+&
+\\
+};
+
+% XDSM process chains
+
+
+\begin{pgfonlayer}{data}
+\path
+% Horizontal edges
+(ode_Solv) edge [DataLine] (ode_Solv-mass_Calc)
+(mass_Calc) edge [DataLine] (mass_Calc-ode_Solv)
+(mass_Calc) edge [DataLine] (mass_Calc-constr_Viol)
+(mass_Calc) edge [DataLine] (right_output_mass_Calc)
+% Vertical edges
+(ode_Solv-mass_Calc) edge [DataLine] (mass_Calc)
+(mass_Calc-ode_Solv) edge [DataLine] (ode_Solv)
+(mass_Calc-constr_Viol) edge [DataLine] (constr_Viol)
+(ode_Solv) edge [DataLine] (output_ode_Solv)
+(constr_Viol) edge [DataLine] (output_constr_Viol);
+\end{pgfonlayer}
+
+\end{tikzpicture}

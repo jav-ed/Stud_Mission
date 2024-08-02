@@ -1,0 +1,175 @@
+
+% =====================================================================
+% ============= Solve ODE - Anly ======================================
+% =====================================================================
+\section{Method for solving the ODE}
+\label{sec_Solve_ODE}
+The chosen ODE \eqref{eq_10} can be solved numerically 
+with different kind of solvers. However, in order to 
+have a possibility to validate the
+quality of the numerical 
+solutions, some simplifications shall be introduced. 
+With these, it is possible to derive an 
+analytical solution. The variables 
+$LoD, AoA, TSFC, m_{fe}$ are all functions 
+of the present total mass, which is shown in 
+equation \eqref{eq_13}. Since the start 
+point for the ODE to be valid is at cruise, the 
+current total mass is the cruise fuel starting 
+mass $m = m_s$. However, itself 
+has a dependency on the expended fuel mass,
+which will be elaborated in 
+section \ref{sec_Fuel_Mass_iter} and makes 
+an analytical explicit solution hard to be derived. Additionally, no 
+equations for $LoD(m_s), \,AoA(m_s), \,TSFC(m_s)$, which 
+would describe a relationship between the variable 
+and the total present mass, are 
+given and therefore formulating an analytical solution becomes 
+impossible.\newline
+
+\begin{equation}
+    \label{eq_13}  
+    \frac{dm_{fe(m)}}{ds} = \frac{g}{a} \, \frac{1}{Ma}\,TSFC(m) \,(m_s + m_{fe}(m))
+    \, \frac{1}{
+        LoD(m) \, cos(AoA(m)) + sin(AoA(m))}  
+\end{equation}
+
+At this point the mentioned 
+simplifications for an analytical solution 
+can be mentioned. Assuming $LoD, AoA, TSFC$
+to be constant allows to find an analytical
+solution, as is presented in the upcoming equations. Consider the 
+equation \eqref{eq_11}, where the 
+A and B are constants and x is the 
+variable for which the solution it is 
+pursued.
+
+
+\begin{equation}
+    \label{eq_11}
+    \frac{dx}{ds} + A\,x = B
+\end{equation}
+
+The solution to this problem \eqref{eq_11} can be 
+obtained by using the integrating factor 
+given in \eqref{eq_12}, where $C$ is a new 
+constant. By replacing $x = m_{fe}$ equation 
+\eqref{eq_14} is obtained. 
+\begin{equation}
+    \label{eq_12}
+    x = \frac{B}{A} + C\, e^{-A\, s}
+\end{equation}
+ 
+\begin{equation}
+    \label{eq_14}
+    m_{fe} = \frac{B}{A} + C\, e^{-A\, s}
+\end{equation}
+
+It is understood that, the consumed fuel mass 
+at the start or at cruise range zero 
+has to be zero $m_{fe}(R_{cr} =0) = 0$, which 
+is the initial condition to the equation \eqref{eq_14}. 
+Inserting this observation leads to equation 
+\eqref{eq_15}
+
+\begin{equation}
+    \label{eq_15}
+    \begin{aligned}
+        m_{fe}(s = R_{cr} =0) = 0 =  \frac{B}{A} + C\\
+        \Rightarrow  C = - \frac{B}{A}
+    \end{aligned}
+\end{equation}
+
+Defining $A$ and $B$ as equations \eqref{eq_15_A} and 
+\eqref{eq_15_B}, respectively
+and incorporating equation \eqref{eq_15}, the 
+analytical solution for the cruise fuel burn can be 
+written as equation \eqref{eq_16}. 
+
+\begin{equation}
+    \label{eq_15_A}
+    A = \frac{g}{a} \, \frac{1}{Ma}\,TSFC \, \frac{1}{
+        LoD \, cos(AoA) + sin(AoA)}
+\end{equation}
+
+\begin{equation}
+    \label{eq_15_B}
+    B = A \, m_s
+\end{equation}
+
+
+
+\begin{equation}
+    \label{eq_16}
+    \begin{aligned}
+        m_{fe}(s = R_{cr} =0) = \frac{B}{A} + \frac{-B}{A}\, e^{-A\,s}\\
+        \Leftrightarrow  m_{fe} = \frac{B}{A} (1-e^{-A\,s})\\
+        \Leftrightarrow  m_{fe} = \frac{B}{A} (1-e^{-A\,s})\\
+        \Leftrightarrow  m_{fe} = \frac{A \, m_s}{A} (1-e^{-A\,s})\\
+        \Rightarrow m_{fe}(s = R_{cr}) =m_s \left(1-e^{\frac{-g}{a} \, 
+            \frac{1}{Ma} \, TSFC \, 
+            \frac{1}{LoD \,cos(AoA) + sin(AoA)} \, s} \right)
+    \end{aligned}
+\end{equation}
+
+This analytical expression in
+equation \eqref{eq_16} is compared with the output of 
+different numerical solvers of Pythons 
+open source library \emph{SciPy}. The 
+different numerical ODE solvers are within the  
+method \emph{solving initial value problem}  
+\emph{(solve\_ivp)} and each solver comes
+with several 
+options, which are 
+documented in \cite{noauthor_scipys_2021}. 
+The results and the comparison 
+is given in section \ref{sec_Solve_ODE_Methods}. However,
+the conclusion of this investigation is that,  
+\emph{SciPy}'s Runge Kutta of 
+order 5 (\emph{RK45}) can be employed without any 
+noticeable loss of accuracy.
+\emph{RK45} assumes an accuracy of the fourth-order
+method, but steps are taken using the 
+fifth-order accurate formula. The occurring deviations to 
+the analytically obtained solution \eqref{eq_16} are less 
+than milligrams, which exhibits a sufficient 
+level of 
+accuracy.\newline
+
+
+\emph{SciPy} allows the user to define the number 
+and the location of steps. However, having compared 
+its default option with less than $20$ steps
+to a ridiculous high number 
+of $1460597$ steps, no noticeable deviation 
+could be observed. Fewer steps at which calculations 
+happen results into a faster execution time. This 
+becomes even more clear when recalling that
+each step invokes surrogate  evaluations. In case 
+of $20$ used steps undertaken, in order to 
+solve the cruise fuel consumption ODE, for 
+each step in this iterative process, the 
+corresponding values 
+for $LoD, AoA, TSFC$ with the
+input set of $Ma,h, mass$ are necessary.
+In simpler terms, each surrogate model
+obtain an input set of $Ma,h, mass$ and 
+provides the corresponding output for 
+$LoD, AoA, TSFC$, which are predictions, thus 
+$\tilde{LoD}, \tilde{AoA}, \tilde{TSFC}$. Since, this has to
+done be for each step, $20*3= 60$ surrogate 
+model invocations 
+for solving the cruise fuel burn equation 
+once, are required. Therefore, the low number of steps  
+and because of the sufficient accuracy of the solution
+with \emph{SciPy}'s default settings for \emph{RK45} are chosen 
+to solve the cruise fuel burn mass. \newline
+
+
+As a final recap, the cruise fuel burn 
+equation cannot be solved analytically due to explained reasons 
+and thus is solved with an outstanding accuracy employing 
+\emph{SciPy}'s numerical ODE solver \emph{RK45} within the 
+\emph{solve\_ivp} environment applying the default options.
+
+

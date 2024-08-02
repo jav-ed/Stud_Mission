@@ -1,0 +1,204 @@
+\documentclass[a4paper, 11pt]{scrreprt}
+
+%Region
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% To get some features - page styling
+\usepackage{fancyhdr}
+\usepackage[left= 3.5cm,right = 2cm, bottom = 3 cm]{geometry}
+
+% Clickable Ref and fast navigation through table of
+% recognition of a table of content
+% see: https://tex.stackexchange.com/questions/50747/options-for-appearance-of-links-in-hyperref
+\usepackage{hyperref}
+ \hypersetup{
+    %  deactivate the border
+     colorlinks=true,
+    %  color of the refs
+     linkcolor=black,
+     filecolor=blue,
+     citecolor = black,
+     urlcolor=cyan,
+     }
+
+
+% graphics library
+\usepackage{graphicx}
+
+% both packages required for Inkscape pic imports
+\usepackage{transparent}
+\usepackage{color}
+
+%  So the graphics can be found
+\graphicspath{{2_Figures/},{2_Figures/1_Task/}, {2_Figures/2_Task/},{2_Figures/3_Task/},
+               {2_Figures/0_Deco/}, {2_Figures/0_Deco/}, {2_Figures/3_Task/1_Steps/},
+               {2_Figures/3_Task/1_Steps}, {2_Figures/3_Task/1_Steps/Version_2_Correct_Steps/*}, 
+               {2_Figures/3_Task/1_Steps/Version_3_Same_Tol/*}  }
+               
+
+% \graphicspath{{2_Figures/*} }
+
+
+% Um den Namen des Autos aus Bibtex anzuzeigen
+%\usepackage[round, authoryear]{natbib}
+\usepackage{natbib}
+
+%Zitationsstil
+%\bibliographystyle{unsrt}
+%\bibliographystyle{unsrtnat}
+% \bibliographystyle{plainnat}
+% \bibliographystyle{apacite}
+\bibliographystyle{plain} %[plain]
+
+% % for tables which needs more than one page
+% \usepackage{longtable}
+
+\usepackage{multirow}
+
+% % --------------- Table and Color ---------------
+% % Table coloring
+% \usepackage[table]{xcolor}
+% \definecolor{lightgray}{gray}{0.9}
+% \definecolor{lightblue}{rgb}{0.93,0.95,1.0}
+% \definecolor{orange}{rgb}{0.93,0.95,1.0}
+
+% %\usepackage{tabu}
+% \usepackage[table]{xcolor}
+
+% \definecolor{tableHeader}{RGB}{211, 47, 47}
+% \definecolor{tableLineOne}{RGB}{245, 245, 245}
+% \definecolor{tableLineTwo}{RGB}{249, 199, 29}
+% % --------------- Table and Color- END ---------------
+
+% For splited lists
+\usepackage{multicol}
+
+%If you want to generate a caption without being inside of a float object
+\usepackage{caption}
+% \usepackage{subcaption}
+
+% For optimization problems definition's
+\usepackage{optidef}
+
+\usepackage{printlen}
+
+
+% % Code-Implementation matlab
+% \usepackage[numbered,framed]{matlab-prettifier}
+
+% % Load Tikz
+% \usepackage{pgfplots}
+
+% % Abbreviation-Table
+% \usepackage{acronym}
+
+% % ---------------------- XDSM --------------------------
+
+\usepackage{tikz}
+
+% % Optional packages such as sfmath set through python interface
+\usepackage{sfmath}
+
+\usepackage{blindtext, rotating}
+
+
+% % Define the set of TikZ packages to be included in the architecture diagram document
+\usetikzlibrary{arrows,chains,positioning,scopes,shapes.geometric,shapes.misc,shadows}
+
+% % Set the border around all of the architecture diagrams to be tight to the diagrams themselves
+% % (i.e. no longer need to tinker with page size parameters)
+% \usepackage[active,tightpage]{preview}
+% \PreviewEnvironment{tikzpicture}
+% \setlength{\PreviewBorder}{5pt}
+
+
+% % ---------------------- XDSM  END --------------------------
+% to automatically ensure floats do not go into the next section.
+\usepackage[section]{placeins}
+
+
+
+% --------------- page header ---------------
+\pagestyle{fancy}
+\fancyhf{}
+
+% on the left side - section name
+\fancyhead[L]{\rightmark}
+
+% pagenumber
+\fancyhead[R]{\thepage}
+
+\renewcommand{\headrulewidth}{0pt}
+%--------------- Page Header END ---------------
+
+
+% Shortcuts - see:
+% https://github.com/James-Yu/LaTeX-Workshop/wiki/Snippets#Font-commands
+
+%Endregion
+
+
+\begin{document}
+
+% Just required to get all the symbol numbers in
+% order to define the symbol numbers for the arabic language
+% \input{1_Latex_Files/0_Arabic_Letters.tex}
+
+% % ---------------- Deco Stuff  ------------------------------
+
+\input{1_Latex_Files/0_Deco/0_Frontpage.tex}
+\input{1_Latex_Files/0_Deco/2_Thanks.tex}
+
+% % % ---------------- Selbstständigkeitserklärung ------------------------
+\input{1_Latex_Files/0_Deco/1_erkl.tex}
+
+
+% =====================================================================
+% ========================= Lists =====================================
+% =====================================================================
+\tableofcontents
+% \listoffigures
+% \listoftables
+
+% =====================================================================
+% ========================= Main Tasks ================================
+% =====================================================================
+
+% % % ---------------- Task 1  ------------------------------
+\input{1_Latex_Files/1_Task/1_Beginn.tex}
+\input{1_Latex_Files/1_Task/2_Intr_Miss.tex}
+
+
+
+% ---------------- Task 2  ------------------------------
+\input{1_Latex_Files/2_Task/1_Methodlogy.tex}
+\input{1_Latex_Files/2_Task/2_Solve_ODE.tex}
+\input{1_Latex_Files/2_Task/3_Mass_Iteration.tex}
+\input{1_Latex_Files/2_Task/4_Surrogates.tex}
+\input{1_Latex_Files/2_Task/5_Krig_RBF.tex}
+\input{1_Latex_Files/2_Task/6_Grad_Shape.tex}
+\input{1_Latex_Files/2_Task/7_Numerical.tex}
+
+
+
+% % ---------------- Task 3  ------------------------------
+\input{1_Latex_Files/3_Task/1_Results.tex}
+\input{1_Latex_Files/3_Task/3_Step_Size.tex}
+\input{1_Latex_Files/3_Task/4_RBF_Interpol.tex}
+\input{1_Latex_Files/3_Task/5_Surrogates.tex}
+
+
+% % ---------------- Task 4 ------------------------------
+\input{1_Latex_Files/4_Task/1_Concl.tex}
+
+% =====================================================================
+% ========================= Bib =======================================
+% =====================================================================
+% % % define the bib file
+\bibliography{3_Bibtex/bib.bib}
+
+
+\end{document}

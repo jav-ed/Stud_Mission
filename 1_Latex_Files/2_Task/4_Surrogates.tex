@@ -1,0 +1,242 @@
+
+\section{Surrogate models}
+\label{sec_Surrogates}
+In very brief words, a surrogate model can be described
+as an approximation model. In most cases 
+it is used in order to pack computational heavy 
+physical based calculations into a simpler 
+and execution time friendlier calculation 
+environment. Surrogate models are very popular in 
+the field of optimization, because 
+every optimization algorithm evaluates 
+function values with variation of the 
+design variables. The design variables 
+are the parameters which are changed by the 
+optimizing algorithm in order to 
+fulfil the minimization or maximization task.
+The design variables could consist of only one 
+variable, e.g. the wing aspect ratio.
+Another example for many design variables
+is topology optimization, where 
+the number of design variables 
+is equivalent to 
+the number of the discretized finite elements. For a
+real world application, e.g. an aircraft or a car  
+the number of finite elements can easily overreach 
+millions. The 
+optimization algorithm tries to 
+minimize the objective function by changing 
+the design variables and usually, each 
+change demands a new calculation. With 
+the variation of the design variables, 
+the optimization algorithms collects 
+outputs which are compared to each other 
+in order to follow a steadily improving 
+path. \newline
+
+In case of 
+a flow field computation, changing only one parameter, 
+e.g. the angle of attack ($AoA$), obligates a new  
+expensive computational task. Depending on the applied fidelity and the 
+object (airplane, car, turbo machinery) for which the flow field 
+is solved, it could acquire seconds till years (
+Direct Numerical Simulation). Thus, one objective 
+of surrogate models is enabling feasible computational times.
+Additionally, surrogate models can be generated and invoked on 
+none high performance computers.\newline 
+
+Surrogate models are also known as metamodels or models of models.
+Eldred er al. \cite{eldred_second-order_2004}
+classified surrogate models 
+into three categories: data-fits, reduced order models
+ and hierarchical models. 
+Reduced-order and hierarchical surrogate models can be 
+further classified as physics-based approaches, due to the 
+exploitation and simplification of 
+governing equations \cite{ahmed_surrogate-based_2009}. Therefore,
+these models are considered as \emph{intrusive} methods. 
+Data-fit surrogate models, however, are assigned to 
+the \emph{black-box} approach, where the outputs
+are only based on the inputs, without necessarily 
+knowing the underlying equations. Black-box approaches 
+are non-intrusive methods and can be further categorized 
+into regression and interpolation. The main difference between 
+these are, that interpolation must match the training or 
+reference data at the given reference points, whereas 
+regression is not obligated to match the sample data at 
+the reference locations. Two widely 
+used interpolation surrogate models are Radial Basis Function (RBF)
+and Kriging models. To generate and use 
+the black-box intrusive surrogate models, sample data is required which 
+for the \emph{missioninformer} is provided by the output of the DLR 
+aerodynamic analysis and optimization workflow 
+\emph{FSAerOpt} \cite{merle_high-fidelity_2019} involving 
+\emph{DLR}'s flow solver \emph{TAU}.\newline
+
+After having the input or training data,
+ a surrogate model and its 
+intern tuning parameter with 
+which the model shall be constructed needs to be defined.
+ The generation 
+of the surrogate model (offline phase) can claim some noticeable time, 
+however, still in feasible manner. Invoking the 
+already build surrogate model (online phase) can 
+be compared with regard to execution time to
+solving a simple linear equation, which is 
+satisfactorily feasible. The main disadvantage 
+by applying surrogate models 
+is the loss of accuracy compared 
+to the underlying physics based equations or 
+the measured experimental data. For 
+assessing the quality of the surrogate model 
+some methods are presented in \cite{meckesheimer_computationally_2002}.
+However, in \emph{missioninformer} one of the most commonly 
+used error measurement, the \emph{root mean square error} (RMSE),
+is employed. It is given in equation \eqref{eq_24}, where 
+$n, \,y_i, \, \tilde{y_i}$ are denoted as the number of 
+validation points (training or sample data obtained 
+from workflow of \emph{FSAerOpt} \cite{merle_high-fidelity_2019}), 
+the actual value and the predicted value, respectively. \newline
+
+
+\begin{equation}
+    \label{eq_24}
+    RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \tilde{y_i})^2}
+\end{equation}
+
+The \emph{missioninformer} involves two interpolation surrogate 
+models, Kriging and RBF with different options, which are 
+described in section \ref{subsec_Kriging_Surrogate} and 
+\ref{subsec_RBF_Surrogate}. Both models will be tested
+with respect to execution time, robustness and RMSE 
+with different model specific options
+in section \ref{sec_Diff_Surrogates}. Surrogate models 
+within the \emph{missioninformer} are generated for 
+$\tilde{LoD}, \tilde{AoA}, \tilde{TSFC}$
+and their gradients with 
+respect to shape parameter. The input set 
+for the mentioned  desired output state and gradient 
+variables consists of $Ma, h, m_s$. The state 
+surrogate models are invoked for solving 
+the equation \eqref{eq_10}, thus needed 
+for the cruise fuel mass computation. For the rest of 
+the flight segments no surrogate
+models are required, since fuel fractions are 
+exploited as explained in sections \ref{sec_Cruise_Mission_Fuel}, 
+\ref{sec_Solve_ODE} and 
+\ref{sec_Fuel_Mass_iter}. Solving the state fuel cruise mass 
+invokes the three required surrogate models
+to predict
+$\tilde{LoD}, \tilde{AoA}, \tilde{TSFC}$  at each 
+step undertaken by the chosen \emph{RK45} 
+solver \cite{noauthor_scipys_2021}.
+The total number 
+of state surrogate model invocations for the 
+state can be described as equation \eqref{eq_25}.
+The number of the gradient surrogate model 
+invocations further includes the number of the 
+shape parameter. The required number of 
+gradient surrogate models and their 
+number 
+of invocations are given in equations 
+\eqref{eq_26} and \eqref{eq_28}, respectively. 
+
+\begin{equation}
+    \label{eq_25}
+    \#_{invok,state} = 3\, \cdot\, steps_{RK45} 
+\end{equation}
+
+\begin{equation}
+    \label{eq_26}
+    \#_{gener,grad} = 3\, \cdot \,\#_{shape,param}
+\end{equation}
+
+\begin{equation}
+    \label{eq_28}
+    \begin{aligned}
+        \#_{invok, grad} &= 3\, \cdot \,steps_{RK45} \, \cdot \, \#_{shape,param} \, 
+        \cdot \, 2 \, \cdot \, \#_{fix,pkt,iter} \\
+        &\Rightarrow 6\, \cdot \,steps_{RK45} \, \cdot \, \#_{shape,param} \, \cdot \, \#_{fix,pkt,iter}
+    \end{aligned}
+\end{equation}
+
+
+In order to understand why equation \eqref{eq_28},
+briefly 
+missioninfomers implemented method to derive 
+gradients shall be mentioned, which in 
+detail is explained in subsection \ref{subsec_CDS}.
+The gradients in \emph{missioninformer} are 
+obtained by exploiting the Central Differencing 
+Scheme, which basically adds a very small 
+positive and negative perturbation to 
+the current state of the present 
+desired variable ($LoD, AoA, TSFC$), for which 
+the gradient is desired and divides the result 
+by two times the size of the perturbation.
+Due to the results for both perturbed states, 
+positive and negative 
+added perturbation, the number 
+of surrogate model invocation increases. In simpler terms, 
+the surrogate model is invoked once for positive 
+added permutation and once for negative added 
+perturbation. The perturbation is called step-size. 
+How and why \emph{missioninformers} default step-size 
+has the value $1\mathrm{e}{-5}$ is described in 
+subsection \ref{subsec_CDS} 
+and  section
+\ref{sec_Step_Size_Study}.\newline
+
+Additionally, 
+also the final values for the gradients 
+are obtained after a fix-point iteration.
+In cases of a barely solvable mission more than 
+500 iterations were required, in some 
+cases even no solution was obtainable and 
+finally in cases where the missions were 
+defined properly (not unrealistic high ranges 
+or payloads) only $4$ fix-point 
+iterations were required. As for the  
+tested missions, a correlation could be read 
+out. In cases where the constraint violation  
+warning was given, more than $4$ fix-point 
+iterations could be seen. Therefore, it 
+is advised to observe the warning outputs.
+Note, the number of the fix-point iterations is also 
+depended on the chosen step-size. The number of 
+$4$ fix-point iteration is met due to 
+the well-fitted step-size of $1\mathrm{e}{-5}$.
+The step-size can be changed inside 
+the mission input file for each mission. However,
+the default value in \emph{missioninformer} is set 
+to $1\mathrm{e}{-5}$ and a 
+change in its value is assumed to most likely 
+have a negative impact on the number 
+of fix-point iterations. The reasons for that 
+will become clearer
+by considering the convergence behavior 
+depicted in the step-size study 
+in section \ref{sec_Step_Size_Study}.\newline 
+
+
+Assuming having $126$ shape parameter, $20$ required 
+steps for the ODE's integration and $4$ fix-point
+iterations, the gradient 
+surrogate models are invoked $30240$ times.
+Using directly CFD calculations, where one CFD result 
+takes easily 3 hours using a 
+reasonable amount of high performance 
+computer resources.  
+
+
+Finally, 
+it shall be mentioned that the number of fix-point 
+iterations is limited to $500$ iterations. In cases, 
+where the missions are physically correctly defined 
+and no constraint violation warning were observed,
+not more than $5$ fix-point iterations were encountered. 
+Therefore, it is regarded to be highly unlikely to require 
+more than $500$ iterations. When the limit of $500$ iterations 
+is reached, the user will be notified in the output 
+about the abortion due to the exceeding of the  fix-point 
+iteration number's limit. 

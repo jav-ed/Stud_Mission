@@ -1,0 +1,279 @@
+% Follwing Command: The figure from previous section shall not 
+% be wihtin this section
+\FloatBarrier
+\subsection{Numerical approach}
+\label{subsec_CDS}
+
+As mentioned in the previous section, an analytical 
+solution was pursued. However, the approach 
+in section \ref{sec_Shape_Gradients} 
+had to be verified. In this subsection, 
+the numerical approach for computing the gradients 
+of the cruise fuel weight and the total fuel weight 
+with respect to the shape parameters shall be 
+explained. The three most frequently 
+employed methods for 
+deriving the gradients numerically are 
+forward, backwards and central finite 
+differences. In the majority of cases 
+central finite differences or also known 
+as central differencing scheme (CDS), which exhibits 
+the best gradient computing accuracy. The equations 
+for forward, backwards and central differencing 
+are given in equations \eqref{eq_68}, \eqref{eq_69}
+and \eqref{eq_70}, respectively. 
+
+\begin{equation}
+    \label{eq_68}
+    \frac{df(x)}{dx} \approx \frac{\Delta f(x)}{\Delta x}=
+     \frac{f(x+h_s) - f(x)}{h_s}
+\end{equation}
+
+\begin{equation}
+    \label{eq_69}
+    \frac{df(x)}{dx} \approx \frac{\Delta f(x)}{\Delta x}=
+     \frac{f(x) - f(x-h_s)}{h_s}
+\end{equation}
+
+\begin{equation}
+    \label{eq_70}
+    \frac{df(x)}{dx} \approx \frac{\Delta f(x)}{\Delta x}=
+     \frac{f(x+h_s) - f(x -h_s)}{2\, h_s}
+\end{equation}
+
+Here the $f(x),\, h_s$ are denoted as any function with 
+the input argument $x$ and the step-size, respectively. 
+The choice of the step-size $h_s$ is important 
+and thus will be dealt with later in more details.  
+As pointed with the approximation sign ($\approx$), 
+it is only an approximation of the gradient. The reason for 
+this can be explained by viewing 
+their derivation. In order to get the one of the 
+three forms a given function is approximated by 
+the Taylor series and since only an infinite 
+long Taylor series can give the accurate solution, 
+aborting the Taylor series after one or 
+two terms cannot be accurate. Here it can also 
+be observed that the gradients only around 
+the approximated location can be considered 
+acceptable. In other words, the higher the step-size 
+$h_s$ gets, the lower the 
+quality of the approximation gets. The 
+approximation error is also called 
+truncation error. Since computers are used 
+for calculating the derivate another 
+error must be considered. The round off error, 
+occurs due to the nature of storing 
+digits into the computer memory or RAM.
+Having a decimal number, it 
+consists of multiple digits. Each digit 
+claims some memory and in case providing 
+all numbers consisting of many digits
+all desired memory, two obstacles 
+are faced. The memory capacities can be 
+overwhelmed quite easy. The second problem is that, 
+if only one number already contains more than 100 
+digits, it's processing by the
+hardware runs into  
+infeasibly high execution time. Therefore, 
+state-of-the-art accuracy uses double 
+precision to store numbers. Already here 
+an approximation of the real number is done.
+This computer based error is called 
+round off error.\newline 
+
+Up to now, two kinds of errors were introduced.  
+The third error is called the abortion error. 
+An infinite Taylor series would 
+remove the abortion 
+error, thus it would be vanished. In the introduction 
+the forward and backwards finite differing methods 
+were stated to be less accurate than the central 
+finite differencing scheme. The reason for that can 
+be seen by their derivation. In short, 
+forward and backwards differing are methods of first order,
+ whereas 
+the central differencing scheme is a method of 
+second order accuracy.\newline
+
+Since the CDS is considered to be more 
+accurate in most applications, it is implemented 
+in \emph{missioninformer}. The equation \eqref{eq_70} 
+shows that CDS can be used as a block-box method, 
+where $f$ can by any computation in \emph{missioninformer} 
+and $x+h_s,\, x- h_s$ represents the parameter, for which 
+the gradient is desired. It needs to be changed 
+by adding and subtracting the step-size $h_s$.
+However, applying this theory is not straight forward 
+for the calculations done in \emph{missioninformer} and 
+thus the CDS does not act as a black-box function.
+The reasons for that are the subject of the 
+upcoming discussion.\newline 
+
+The gradient of the total fuel mass 
+$m_f$ with respect to the shape 
+parameter is the object of desire
+$\frac{dm_f}{\vec{p}}$. The reason 
+why the shape parameter variable 
+$\vec{p}$ is chosen to be formulated as 
+a vector is to highlight, that 
+not only one gradient is calculated.
+Because no optimization can 
+be accomplished with having defined 
+only one shape parameter, it is more 
+correct to talk about the shape 
+parameter vector $\vec{p}$, which 
+notation from here on will be continued 
+to be followed.
+In order to apply the straight forward CDS as described 
+with equation \eqref{eq_70}, the relationship for each 
+variable $LoD, AoA, TSFC$ to all the shape parameters 
+$\vec{p}$, as stated in equation \eqref{eq_72}
+must be known.
+
+\begin{equation}
+    \label{eq_72}
+    LoD(\vec{p}),  \quad AoA(\vec{p}), \quad TSFC(\vec{p})
+\end{equation}
+
+However, the encountered problem is that these relationships 
+from equation \eqref{eq_72} are not known, thus the 
+black box straight forward CDS presented in equation 
+\eqref{eq_70} cannot be applied.
+The following simple and mathematical correct workaround was found. 
+
+\begin{align}
+    LoD_{pertubated} &= h_s \, \dfrac{dLoD}{d\vec{p}} \label{eq_73}\\
+    AoA_{pertubated} &=  h_s \, \dfrac{dAoA}{d\vec{p}}\\
+    TSFC_{pertubated} &=  h_s \, \dfrac{dTSFC}{d\vec{p}} \label{eq_74}
+\end{align}
+
+
+With these background, two different workflows, for 
+solving the gradients of the total fuel mass 
+with respect to the shape parameters can be 
+discussed. The difference in both occurs in 
+using the auxiliary cruise fuel fraction term 
+$fr_{cr}$ given in the following equation 
+or inserting it directly into the remaining 
+equations as presented in section \eqref{sec_Fuel_Mass_iter}
+
+\begin{equation}
+    fr_{cr} =  \frac{m_s - f_{cr}}{m_s} \tag{\ref{eq_20_Cruise_Fraction}}
+\end{equation}
+
+In case of direct insertion, the equation 
+\eqref{eq_63} is obtained, as explained 
+in section \ref{sec_Shape_Gradients} and 
+is referred to as \emph{direct method}
+\begin{equation}
+    m_f = \dfrac{ff_2 \, m_{f, zero} + ff \, m_{cr} - ff \, ff_2 \, m_{f, zero}}
+    {ff_2 \, (ff - f_{reser})} \tag{\ref{eq_63}}
+\end{equation}
+
+For defining the fuel cruise fraction 
+$fr_{cr}$ explicitly the method is 
+referred to as \emph{indirect method}. 
+The indirect method's solution  
+is given in equation \eqref{eq_75},
+which derivation can be seen in section \ref{sec_Fuel_Mass_iter}
+with the equations \eqref{eq_17} to \eqref{eq_20}.
+
+\begin{equation}
+    \label{eq_75}
+    m_{f} = \frac{fa - f_{zero}}{f_{reser} -fr_{cr} 
+    \,fr_1 \, fr_2\,fr_3 \, fr_4 \, 
+    fr_5\, fr_6\, fr_7 }
+\end{equation}
+
+After analyzing two main differencing could be
+observed. The direct method often claims 
+more fix-point iterations. In contrast, 
+it was found to be more accurate 
+by satisfying lower convergence criteria. In case 
+of low convergence parameter, the 
+indirect method stucked inside a loop, where 
+it jumped between two values.
+Since the \emph{missioninformer} has a limit 
+of maximal allowed iterations of 500, 
+the iterative method would stop 
+after 500 iterations and thus would 
+require more iterations than the 
+direct method. However, a relative 
+and absolute tolerance \cite{noauthor_numpys_2021} value of 
+$5 \mathrm{e}{-5}$ is assumed to be accurate enough.
+With this tolerance value, no 
+permanent stay for the indirect method inside 
+a loop could be observed.
+Also, in cases where the missions were 
+defined reasonably, only 4 iterations 
+were required for obtaining the 
+gradient of the total fuel mass $\frac{dm_f*}{d\vec{p}}$ 
+per gradient component and perturbation 
+direction.
+Therefore, the \emph{missioninformer} default method 
+is chosen to be the indirect method.\newline 
+
+The parameter which defines the quality of 
+the gradients by applying CDS is the 
+choice of the step-size $h_s$. In order 
+to find an appropriate $h_s$ two different 
+missions were defined. One, which 
+raised the \emph{constraint violation check} 
+to output warning statements and 
+one without. Thus, these missions can be 
+considered to be hard to be solved (mission 1)
+and the opposite (mission 2), 
+respectively. For both missions, 
+applying both methods (direct and indirect)
+a step-size study is performed. In case 
+of the harder to solve mission 1, the number 
+of maximal fix-point iterations was reached. The 
+missions definitions can be 
+found in table \ref{tab_5_Mission_Step_Size}.
+The difference 
+between current table \ref{tab_5_Mission_Step_Size}
+and the table \ref{tab_2} from subsection 
+\ref{subsec_INvestigate_Surro} is only 
+in the definition of the range for mission 1.
+In table 
+\ref{tab_5_Mission_Step_Size} this has been 
+reduced by $1000$ meters.
+
+\begin{table}[!h]
+        \centering
+        \begin{tabular}{l| c c c c c c }
+            \textbf{Mass} & \multicolumn{1}{c}{\textbf{Mission 1}} &&& 
+            \multicolumn{1}{c}{\textbf{Mission 2}}\\
+            \hline
+            maximal takeoff & $245 \mathrm{e}{3}$ &&&      $245\mathrm{e}{3}$         &&\\
+            maximal landing & $192.2 \mathrm{e}{3}$ &&&      $192.2\mathrm{e}{3}$         &&\\
+            operating empty & $132.5\mathrm{e}{3}$ &&&      $132.5\mathrm{e}{3} $         &&\\
+            manufactures empty & $119.2\mathrm{e}{3} $ &&&      $119.2\mathrm{e}{3} $         &&\\
+            maximum zero fuel  & $180.5\mathrm{e}{3} $ &&&      $180.5\mathrm{e}{3} $         &&\\
+            maximum fuel & $107.6\mathrm{e}{3}$ &&&      $107.6\mathrm{e}{3}$         &&\\
+            design payload & $38.52\mathrm{e}{3}$ &&&      $33.60\mathrm{e}{3} $         &&\\
+            maximum payload & $48.00\mathrm{e}{3}$ &&&      $48.00\mathrm{e}{3}  $         &&\\
+            \hline
+            &  &&&               &&\\
+            \textbf{Flying parameters} &  &&&               && \\
+            \hline 
+            $Ma$ & $0.83$ &&&      $0.82$         &&\\
+            $h$ & $10.668\mathrm{e}{3}$ &&&      $11.000\mathrm{e}{3}  $         &&\\
+            $R_{cr}$ & $10186.0\mathrm{e}{3} $ &&&      $5185.6\mathrm{e}{3} $         &&\\
+            \hline
+            &  &&&               &&\\
+            \textbf{Others} &  &&&               && \\
+            \hline 
+            step-size & $1\mathrm{e}{-5} $&&&      $1\mathrm{e}{-5}$         &&\\
+            weight-factor & $0.7$ &&&      $0.3$         &&\\
+        \end{tabular}
+        \caption{Missions definitions for investigation on step-size}
+        \label{tab_5_Mission_Step_Size}
+\end{table} 
+
+\FloatBarrier
+The convergence behavior of both missions and 
+both methods is presented in section \ref{sec_Step_Size_Study}.
+However, the final result is that missionsinformers
+default step-size is chosen to be $h_s = 1 \mathrm{e}{-5}$.

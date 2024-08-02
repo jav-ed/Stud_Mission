@@ -1,0 +1,585 @@
+\section{Evaluating different surrogate models}
+\label{sec_Diff_Surrogates}
+In this section the different surrogate models 
+Kriging (Gaussian), TPS and RBF are 
+explored, which are all described 
+in section \ref{sec_Surrogates}. Since most 
+explanations for the upcoming explorations 
+were given in subsection \ref{subsec_INvestigate_Surro}, 
+only necessary details will be repeated.
+The two missions which are going 
+to be used for the following investigations are 
+shown in table \ref{tab_2}.
+Both missions passed 
+the constraints check 
+violation successfully and thus 
+the number of the fix point iterations 
+for calculating the gradients is low.
+The table \ref{tab_7} shows the 
+options for Kriging and TPS and 
+\emph{SciPy}s RBF. For all \emph{SciPy}s RBF 
+kernels a \emph{smooth} value of 
+$0.1$ \cite{noauthor_rbf_2021} was used.  More
+information about the settings and kernel 
+is given in section \ref{sec_Surrogates}. \newline 
+
+%
+\begin{table}[!h]
+        \centering
+        \begin{tabular}{l c c |l }
+            \multicolumn{3}{c|}{\textbf{\emph{SMARTy} 
+            Kriging and TPS}} & 
+            \multicolumn{1}{l}{\textbf{\emph{SciPy}}} \\
+            \hline
+%           ------------ Second Title -----------------------
+            \multicolumn{1}{l}{\textbf{Name}} & 
+            \multicolumn{1}{c}{\textbf{Augmentation}} &
+            \multicolumn{1}{c}{\textbf{Regularization}} &
+            \multicolumn{1}{|c}{\textbf{RBF Kernel}}\\
+            \hline
+            A & $-1$ &False &  multiquadric       \\
+            B & $0$ &False  & inverse      \\
+            C & $+1$ &False &  gaussian        \\
+            D & $+2$ &False &  linear       \\
+            E & $-1$ &True  &  cubic   \\
+            F & $0$ &True   &  thin plate   \\
+            G & $+1$ &True  &   -  \\
+            H & $+2$ &True  &  -   \\
+        \end{tabular}
+        \caption{Kriging, TPS and RBF parameter used for investigation 
+        surrogate quality}
+        \label{tab_7}
+\end{table} 
+%
+\FloatBarrier
+Similarly to the results sections before, much 
+research has been done. However, not 
+all results can be shown, rather 
+results which are supposed to sum the 
+found results up will be shown and elaborated.
+Recall, 35 effective or fully trimmed sample points 
+were given as the input data for training the surrogate 
+models. The investigations were performed 
+for state and gradients as well. In 
+subsection \ref{subsec_INvestigate_Surro} 
+three different versions were introduced, \emph{V38,V28}
+and \emph{V18}, where each version only effectively
+have three less sample points than its declarations name.
+According to subsection 
+\ref{subsec_INvestigate_Surro} for V38 the
+\emph{Leave-one-out cross-validation} is applied. Whereas 
+for V28 and V18 the \emph{Root Mean Square Error} (RMSE)
+is calculated by having 10 and 20 additional 
+sample points, respectively. For
+this additional sample points the true value of output variables 
+$AoA, LoD, TSFC$ and their gradients is known.\newline
+
+
+The first exploration, which will be considered is 
+by using the 38 sample data (effective 35 trimmed samples).
+For this V38, the total missions fuel mass $m_f$, 
+the cruise fuel weight $m_{cr}$ and the cruise 
+starting mass $m_s$ were monitored. However, 
+since only for the cruise segment 
+a physical based equation is applied, it is sufficient 
+to only portray the curve of the total 
+fuel mass $m_f$ with the different 
+surrogate models.
+As concluded in section \ref{sec_Step_Size_Study}, the indirect 
+method is preferred to the direct method. Therefore, 
+the indirect method is used in order to perform this 
+surrogate investigation.
+Figure \ref{fig_88} and \ref{fig_89} exhibit the total 
+fuel mass $m_f$ of mission 1, by 
+employing Kriging and TPS, respectively. 
+Figures \ref{fig_90} and \ref{fig_91} show
+the same for mission 2.
+The 
+horizontal axis gives information about the chosen 
+model intern parameter, which can be read from table \ref{tab_7}.
+In both cases it can be observed, 
+changing the model intern parameter does have an impact 
+of the outcome ($m_{f}$). For both surrogate models
+with their different options the deviation is less than 
+$260$ kilogram. In case of Kriging and TPS in figures \ref{fig_88}
+and \ref{fig_91}, respectively it is only $25$ kilogram. Such a deviation
+is considered to be acceptable.
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/1_Krig/1_Miss_1_Final.pdf}
+        \caption{Final mission fuel weight $m_f$, Mission 1, Kriging variants}
+        \label{fig_88}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/2_TPS/1_Miss_1_Final.pdf}
+        \caption{Final mission fuel weight $m_f$, Mission 1, TPS variants}
+        \label{fig_89}    
+    \end{minipage}
+\end{figure} 
+
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/1_Krig/1_Miss_2_Final.pdf}
+        \caption{Final mission fuel weight $m_f$, Mission 2, Kriging variants}
+        \label{fig_90}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/2_TPS/1_Miss_2_Final.pdf}
+        \caption{Final mission fuel weight $m_f$, Mission 2, TPS variants}
+        \label{fig_91}    
+    \end{minipage}
+\end{figure} 
+
+ \FloatBarrier
+Figures \ref{fig_92} to \ref{fig_95} exhibits the number of 
+the fix point iterations, which were required for 
+only mass calculation for the states, as explained 
+in section \ref{sec_Fuel_Mass_iter}. It can be 
+seen that in no event more than 4 state fix point 
+iterations are required. The difference between the 
+gradient and the state fix point iterations can 
+be simplified as follows. The gradient fix point iterations number 
+is approximately twice as high as the state version. This is so, because 
+the CDS evaluates the functions 
+value at two points, thus the state fix point iteration 
+is run twice.\newline
+
+Figures \ref{fig_96} to \ref{fig_99} depict the same 
+kind of study for RBF and its options.
+It can be observed, that RBF predictions highly depend on the chosen 
+kernel. Also, the number of the state fix point iterations are much 
+higher.
+Figures \ref{fig_100} and \ref{fig_101} show a comparison 
+with all surrogate models and their options for 
+mission 1 and 2, respectively. It can be seen, that 
+only in case of mission 1, depending 
+on RBF's kernel a match with Kriging and TPS 
+occurs. In general, it can be stated that the
+\emph{SciPy} RBF's output is noticeably different to 
+\emph{SMARTy}'s Krigings and 
+TPS output. However, Krigings and TPS output 
+exhibit a comparatively low deviation. Furthermore, 
+it can be said that RBF has a much higher demand of 
+state fix point iterations, which makes is 
+unfeasible for application purposes.
+
+\FloatBarrier
+ \begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/1_Krig/4_Miss_1_Nr_Iter.pdf}
+        \caption{Number of the state fix-point iterations, Mission 1, Kriging variants}
+        \label{fig_92}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/2_TPS/4_Miss_1_Nr_Iter.pdf}
+        \caption{Number of the state fix-point, Mission 1, TPS variants}
+        \label{fig_93}    
+    \end{minipage}
+\end{figure} 
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/1_Krig/4_Miss_2_Nr_Iter.pdf}
+        \caption{Number of the state fix-point iterations, Mission 2, Kriging variants}
+        \label{fig_94}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/2_TPS/4_Miss_2_Nr_Iter.pdf}
+        \caption{Number of the state fix-point, Mission 2, TPS variants}
+        \label{fig_95}    
+    \end{minipage}
+\end{figure} 
+
+% -------------------- RBF STATE -------------------------------
+
+
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/3_RBF/1_Miss_1_Final.pdf}
+        \caption{Final mission fuel weight $m_f$, Mission 1, RBF variants}
+        \label{fig_96}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/3_RBF/1_Miss_2_Final.pdf}
+        \caption{Final mission fuel weight $m_f$, Mission 2, RBF variants}
+        \label{fig_97}    
+    \end{minipage}
+\end{figure} 
+
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/3_RBF/4_Miss_1_Nr_Iter.pdf}
+        \caption{Number of state fix point iterations, Mission 1, Kriging variants}
+        \label{fig_98}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/3_RBF/4_Miss_2_Nr_Iter.pdf}
+        \caption{Number of state fix point iterations, Mission 2, TPS variants}
+        \label{fig_99}    
+    \end{minipage}
+\end{figure} 
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/4_Compare/2_All/1_Miss_1_Final.pdf}
+        \caption{Total fuel mass $m_{f}$ for all surrogate models, Mission 1}
+        \label{fig_100}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/1_Fleiss/4_Compare/2_All/1_Miss_2_Final.pdf}
+        \caption{Total fuel mass $m_{f}$ for all surrogate models, Mission 2}
+        \label{fig_101}    
+    \end{minipage}
+\end{figure} 
+
+\FloatBarrier
+The next step is to consider the effect of a decreasing number 
+of training samples and its effect on the surrogate models.
+This is done only for Kriging and TPS, since 
+\emph{SciPy}'s RBF showed 
+a too high sensitivity on the chosen kernel and also 
+required too many fix point iterations. 
+Kriging and TPS have the same 8 options. 
+The total fuel mass $m_{f}$ is plotted 
+in the figures \ref{fig_102} to \ref{fig_105}. 
+Comparing  $m_{f}$ for mission 1 
+with Kriging 
+and TPS via figures \ref{fig_102} and \ref{fig_103}, respectively, 
+the following can be observed. The vertical scaling axis 
+of Kriging is finer, which means, a high change on the left 
+figure results in a low change on the right figure (TPS).
+The maximum difference in the version which could occur 
+for Kriging is $350$ kg and for TPS is $1600$ kg. Therefore, 
+the absolute deviation needs to be calculated, which are 
+shown in figures \ref{fig_104} and \ref{fig_105} for 
+Kriging and TPS, respectively. In the mentioned figures, 
+the green and red curves are more interesting to us, since 
+it is assumed that V38 is the most accurate version and 
+thus is considered as the basis. For mission 1, Kriging 
+V18 and V28 are clearly closer to V38. In other words, 
+Kriging tends to deliver with fewer data 
+results closer to the fine sampling outputs than TPS. In case 
+Kriging would also be the most accurate method
+(see subsection \ref{subsec_Krig_TPS_Accu}), it 
+could be preferred for training surrogate models 
+with a fewer number of training data.
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/1_Regular/1_Mission_1_Krig_Fuel_Weight.pdf}
+        \caption{Total fuel mass $m_{f}$ for all Versions, Mission 1, Kriging}
+        \label{fig_102}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/1_Regular/3_Mission_1_TPS_Fuel_Weight.pdf}
+        \caption{Total fuel mass $m_{f}$ for all Versions, Mission 1, TPS}
+        \label{fig_103}    
+    \end{minipage}
+\end{figure} 
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/1_Regular/2_Mission_1_Delta_Krig_Fuel_Weight.pdf}
+        \caption{ Deviations of the different versions of $m_{f}$, Mission 1, Kriging}
+        \label{fig_104}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/1_Regular/4_Mission_1_Delta_TPS_Fuel_Weight.pdf}
+        \caption{ Deviations of the different versions of $m_{f}$, Mission 1, TPS}
+        \label{fig_105}    
+    \end{minipage}
+\end{figure} 
+
+
+
+\FloatBarrier
+The same also must be tested for mission 2. The results are 
+presented in figures \ref{fig_106} to \ref{fig_109}. 
+The observations made for mission 1 are confirmed by having 
+investigated on mission 2.
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/1_Regular/1_Mission_2_Krig_Fuel_Weight.pdf}
+        \caption{Total fuel mass $m_{f}$ for all Versions, Mission 2, Kriging}
+        \label{fig_106}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/1_Regular/3_Mission_2_TPS_Fuel_Weight.pdf}
+        \caption{Total fuel mass $m_{f}$ for all Versions, Mission 2, TPS}
+        \label{fig_107}    
+    \end{minipage}
+\end{figure} 
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/1_Regular/2_Mission_2_Delta_Krig_Fuel_Weight.pdf}
+        \caption{Deviations of the different versions of $m_{f}$, Mission 2, Kriging}
+        \label{fig_108}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/1_Regular/4_Mission_2_Delta_TPS_Fuel_Weight.pdf}
+        \caption{Deviations of the different versions of $m_{f}$, Mission 2, TPS}
+        \label{fig_109}    
+    \end{minipage}
+\end{figure} 
+
+\FloatBarrier
+Up to now, only state solutions were discussed. However, the whole 
+investigation process was also done for the gradients.
+Since the gradient investigation does not lead to
+further findings, only 
+the most important results will be shown. Furthermore,
+only mission 1 is displayed as a representation of both missions
+The figures \ref{fig_110} and \ref{fig_111} 
+depict the mean curve of the gradient 
+of the total fuel masses w.r.t. all shape parameter.
+Mean curve means, that the results of the 8 options 
+were used for calculating their respective mean values.\newline
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/2_Grad/1_Mean_Miss_1_Grad_Krig.pdf}
+        \caption{Total fuel mass gradients w.r.t. shape parameters, All versions, Mission 1, Kriging}
+        \label{fig_110}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/2_Grad/2_Mean_Miss_1_Grad_TPS.pdf}
+        \caption{Total fuel mass gradients w.r.t. shape parameters, All versions, Mission 1, TPS}
+        \label{fig_111}    
+    \end{minipage}
+\end{figure} 
+
+\FloatBarrier
+Next, the required execution time by having chosen 
+the different surrogate models is going to be 
+displayed. It is measured 
+right after invoking \emph{missioninformer} till
+the state and gradients for both missions were computed entirely
+and stored to the hard disk. In other words, it is 
+the execution time of \emph{missioninformer} itself, which 
+is measured with different surrogate models.
+The results are depicted in figure \ref{fig_112}.
+It can be observed that the Kriging versions 
+are also more stable in the run time 
+than TPS. The impact of different Kriging 
+options does not have high impact of 
+its execution time. TPS on the other hand, 
+can be a little faster than Kriging with some options, however
+also can be much slower with other options.
+Also, depending on the sample data size, 
+a high deviation can be observed, when 
+regularization is activated (E to H).
+
+
+\begin{figure}[!h]
+        \centering
+        \includegraphics[width =0.8\textwidth]{2_Figures/3_Task/3_Surrogate/5_Fleiss_V_All/2_Grad/7_Exec_Time.pdf}
+        \caption{Missioninformers execution time with different surrogate models}
+        \label{fig_112}    
+\end{figure} 
+
+\FloatBarrier
+\subsection{Kriging and TPS accuracy}
+\label{subsec_Krig_TPS_Accu}
+The objective of this subchapter is to 
+present quantifiable information about the accuracy
+of Kriging and TPS models 
+depending on their user-defined options. The question is, 
+which model and which option leads to the 
+lowest RMSE. The answer 
+to this question is found using 
+\emph{SMARTy}'s automated model 
+selection capability. The workflow for this 
+purpose was repeated shortly in the introduction 
+of this section and is given in more detail 
+in subsection \ref{subsec_INvestigate_Surro}.
+Therefore, the results shall be 
+presented straight forward. On the left 
+side the best option set for the state 
+is given. Here also the declaration 
+of the 16 tested models is provided, which 
+is valid for the gradient investigation, depicted
+on the right side, as well.
+For the state calculation, only three 
+surrogate models $\tilde{LoD}, \tilde{AoA}, \tilde{TSFC}$
+are generated. Therefore, out of the total 16 
+options for each of the three different 
+surrogate models, only one offers the least 
+RMSE. Therefore, for the states, each option 
+only once can be found to be the best.
+In contrast, the gradient has 
+multiple shape parameters and each shape parameter 
+has his own best option. Due to this, one 
+option can be found to have the least value of 
+RMSE multiple times per associated output 
+parameter $LoD, AoA, TSFC$.\newline
+
+The figure \ref{fig_113}, \ref{fig_115} and 
+\ref{fig_117} depict the state version for 
+V18, V28 and V38 respectively. The figures 
+\ref{fig_114}, \ref{fig_116} and \ref{fig_118} 
+their respective gradient version. Each figure 
+on the left side contains a legend, which 
+is valid for both sides. A clear distriction 
+between Kriging and TPS models can be
+made with the letters
+\emph{A - H} and \emph{I-P}, respectively.
+ Unfortunately,
+no absolutely clear winner can be filtered out of these 
+results. The distributions are too different for this purpose.
+However, a suggestion can still be  made by 
+starting with  options, which should not be 
+taken into consideration.
+Viewing all the gradient results (right side), 
+options \emph{C, I, J, K} and \emph{L} show 
+the least number of best RMSE values.
+Also, the same options were not found 
+to be the best choice for the states. 
+The option \emph{A} is also not to be found 
+as the best choice for states nor 
+does it have a good result for the 
+gradients for V18 and V28.  
+Option \emph{A} is clearly no suggestion, but 
+does not perform as bad as the other 
+options mentioned before. The remaining 
+possible options are: 
+\emph{B, D, E, F, G, H, L, M, N, O} and 
+\emph{P}. From these options 
+\emph{F, H, M} and \emph{N} exhibit the 
+best state results. These are 2 Kriging and 2 TPS models.
+3 out of these 4 models include regularization and 
+have the augmentation value of $1$. From here on, the most 
+appealing option by including the gradients, 
+is option \emph{N}.  
+Furthermore, 
+figures \ref{fig_105} 
+and \ref{fig_109} should be considered 
+in this examination. They  
+depict the deviation for the 
+different versions (V18, V28, V38) 
+for \emph{SMARTy}'s TPS with 
+an augmentation of $-1$. For both 
+missions the deviation is high. This  
+option 
+is declared as \emph{J} in 
+the figures \ref{fig_113} and 
+\ref{fig_118} and also here, 
+unsatisfactory results are found. \newline
+
+In conclusion, it can be said, no real winner 
+could be found out for the options. However, 
+using regularization and an augmentation 
+of value $1$ can be recommended. If a final 
+decision had to be made, option \emph{N},
+the TPS model with regularization
+and an augmentation of $1$ should be chosen.
+Note that performing this model selection study 
+took more than 3 days on the workstation described 
+in section \ref{sec_Motivation}.
+This means performing
+model selection for each new set of training samples 
+within an aerodynamic optimization 
+is not feasible. Therefore, TPS with 
+active regularization and an augmentation 
+of $1$ is set as the default model 
+in \emph{missioninformer}.
+
+\begin{figure}[!h]
+    %\vspace{0.5cm}
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/6_Best_Models/state_Model_18.pdf}
+        \caption{Lowest RMSE by having compared Krigings and TPS 8 options, state V18}
+        \label{fig_113}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/6_Best_Models/grad_Model_18.pdf}
+        \caption{Lowest RMSE by having compared Krigings and TPS 8 options, gradient V18}
+        \label{fig_114}    
+    \end{minipage}
+    \vspace{0.5cm}
+    % ------------------------------------ V28 ----------------
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/6_Best_Models/state_Model_28.pdf}
+        \caption{Lowest RMSE by having compared Krigings and TPS 8 options, state V28}
+        \label{fig_115}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/6_Best_Models/grad_Model_28.pdf}
+        \caption{Lowest RMSE by having compared Krigings and TPS 8 options, gradient V28}
+        \label{fig_116}    
+    \end{minipage}
+    \vspace{0.5cm}
+    % ------------------------------------ V38 ----------------
+    \begin{minipage}[h]{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/6_Best_Models/state_Model_38.pdf}
+        \caption{Lowest RMSE by having compared Krigings and TPS 8 options, state V38}
+        \label{fig_117}    
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+        \centering
+        \includegraphics[width =\textwidth]{2_Figures/3_Task/3_Surrogate/6_Best_Models/grad_Model_38.pdf}
+        \caption{Lowest RMSE by having compared Krigings and TPS 8 options, gradient V38}
+        \label{fig_118}    
+    \end{minipage}
+\end{figure} 

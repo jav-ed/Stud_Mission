@@ -1,0 +1,461 @@
+
+\subsection{Kriging models}
+\label{subsec_Kriging_Surrogate}
+Kriging for using as a surrogate model was originally developed 
+for the field of geostatics by Daniel G. Krige, after which the 
+method is named \cite{krige_statistical_1951}. The 
+term \emph{Kriging} was shaped by Matheron \cite{matheron_principles_1963}, 
+who was also the first to formulate it mathematically. Initially after 
+its development, Kriging was used to model continuous 
+defined functions based on measurement data. The foundation 
+of exploiting Kriging models in the Design and Analysis of 
+Computer Experiments (DACE) was first developed by 
+Sacks et al. \cite{sacks_design_1989}, where 
+the input points represent the spatial 
+geographical coordinates. In Kriging models a 
+deterministic response $y(x)$ is a realization of a stochastic
+process $Y(x)$ \cite{sacks_design_1989} and is described in 
+the following equation: 
+
+\begin{equation}
+    \label{eq_29}
+    Y(x) = \sum_{k=1}^{N_f}f_k(x) \beta_k + Z(x) = f^T (x) \beta + Z(x)
+\end{equation}
+
+The first term is the global model component, where
+$f(x) = [f_1(x), \, f_2(x),\, ....,\,
+f_{N_f}(x)]^T$ 
+is a vector of $N_f$ 
+basis functions and $\beta = [\beta_1, \,\beta_2,\, ..., \,\beta_{N_f}]$
+is a vector of the
+unknown coefficients. The stochastic component $Z(x)$ is 
+treated as the realization of a stationary Gaussian 
+function with an expected value of zero ($E[Z(x)]=0$) 
+and the covariance is given in equation \eqref{eq_30}, where 
+$R$ denotes the correlation function with $R(0) = 1$.
+Because of this, Kriging models can be used
+as interpolation models 
+and thus provide the exact prediction at the 
+training or sample data. However, by applying 
+regularization, which adds a constant to each 
+control point, the interpolation turns into 
+regression. The greater the distance 
+of the input, for which the predicted 
+output is desired is from the training sample data, 
+the greater the error in the variance gets.
+In other words, in Kriging models the data are assumed 
+to be exact, but the function is a realization of a
+Gaussian process \cite{viana_special_2014}. The second term 
+is denoted as bias, a systematic departure from the linear model 
+or localized deviation \cite{simpson_kriging_2001}.
+
+\begin{equation}
+    \label{eq_30}
+    Cov\, [Z(x_i), \,Z(x_j)] = \sigma^2\, R(x_i, x_j)
+\end{equation}
+
+In \emph{1d} the stationary correlation function 
+between 
+any two points in the input space $y(x_i)$
+and $y(x_j)$, depend only on the difference 
+between these points ($\Delta x = x_i - x_j$).
+For higher-dimensional problems, the correlation function 
+in a Kriging model usually 
+obeys the \emph{product correlation rule}, given in
+equation \eqref{eq_31}, 
+where $\theta = \theta^{(k)}, \, k= 1,...., N_d$ is denoted as the 
+vector of correlation parameters. The notation $d_{ij}^{(k)}$ is the distance 
+between two points in the $k^{th}$ dimension $(\, x_i^{(k)} 
+- x_j ^{(k)\,})$. The correlation parameters, are called Kriging 
+hyperparameters and can be found by using the 
+Maximum Likelihood Estimation (MLE) approach. Large 
+$\theta$ values represent a weak spatial correlation, whereas 
+small values stand for a strong spatial correlation.
+Since \emph{missioninformer} calls \emph{SMARTy} for its 
+Kriging operations, different correlations 
+functions can be used. However, within this research 
+the Gaussian correlation function
+is used.
+
+
+\begin{equation}
+    \label{eq_31}
+    R_{ij}\,(\theta, d) = \prod_{k = 1}^{N_d} R\,(\theta ^{(k)}, \, 
+    d_{ij}^{(k)})
+\end{equation}
+
+
+\subsection{RBF models}
+\label{subsec_RBF_Surrogate}
+RBF stands for \emph{Radial Basis Function} and is 
+black-box surrogate model, which simulates complicated 
+design landscapes using a weighted sum of 
+simple functions as shown in equation \eqref{eq_32}.
+Here $x_0,\, x_s,\, y_s$ are denoted as 
+input space, samples location's and output's value, respectively.
+The function $\psi (\,||x_0 -c_i||\,)$ is the kernel
+function centered at $c_i$ and the norm $||\cdot||$ is 
+the Euclidean distance. Usually, the training sample points are used as 
+the center, therefore it can be stated: $c = x_s \;\wedge \; N_c = N_s$.
+\begin{equation}
+    \label{eq_32}
+    \tilde{y}\,(x_0, x_s, y_s) = \Psi_{0}^{T} \, w =
+    \sum_{i = 1}^{N_c} w_i \, \psi (\,||x_0 -c_i||\,)
+\end{equation}
+
+The vector of the unknown coefficients $w$, is obtained by 
+solving the system of linear equations given in equation 
+\eqref{eq_33}. The gram matrix $\Psi$ is defined as 
+$\Psi_{ij} = \psi(|| \, x_{s_i} - x_{s_j}\, ||)$. In other 
+words, the gram matrix, is the kernel function evaluated 
+at the Euclidean distance between the $i^{th}$ and the 
+$j^{th}$ samples. 
+
+\begin{equation}
+    \label{eq_33}
+    \Psi \, w = y_s
+\end{equation}
+
+
+The \emph{missioninformer} invokes 
+Pythons library \emph{SciPy} and \emph{SMARTy} for the RBF calculations. 
+\emph{SciPy} enables the user to define $7$ different kernels, 
+which are given in 
+the equations \eqref{eq_34} to \eqref{eq_35}, 
+by changing one input parameter 
+\cite{noauthor_rbf_2021}. \emph{SMARTy} uses 
+the Thin Plate Spline (TPS) kernel.
+The variables $r, \epsilon$ are denoted 
+as the Euclidean distance and an adjustable constant 
+for Gaussian or multiquadtratic functions,
+respectively. Only $6$ of the $7$ kernels were used,
+since the quintic kernel took multiple 
+hours to provide a solution. The $6$ kernels are used for a 
+comparison to 
+Kriging. The results of the comparison 
+are shown in \ref{sec_Diff_Surrogates}
+
+
+\begin{align}
+    multiquadric &\;=\;  \sqrt{\left(\frac{r}{\epsilon}\right)^2 + 1}  \label{eq_34}\\
+    inverse &\;=\; \frac{1}{ \sqrt{\left(\dfrac{r}{\epsilon}\right)^2 + 1}} \\
+    gaussian &\;=\; exp \;[\;- \left(\frac{r}{\epsilon}\right)^2\;] \\
+    linear &\;=\;  r \\
+    cubic &\;=\;  r^3 \\
+    quintic &\;=\;  r^5\\
+    thin\, plate\, spline &\;=\;  r^2 \, ln\,(r) \label{eq_35}
+\end{align}
+
+
+\newpage
+
+\subsection{Investigations on different surrogate models}
+\label{subsec_INvestigate_Surro}
+
+In this subsection, the procedure, which was undertaken to 
+investigate on the two most widely used 
+surrogate models RBF and Kriging shall be explained.
+Note, the results are all presented in section 
+\ref{sec_Diff_Surrogates}. In the beginning 
+of this section an introduction to RBF 
+and Kriging and some 
+reasons for the necessity of a reliable 
+surrogate model were given. 
+However,
+the main reason comes through the high dependency 
+of the \emph{missioninformers} output, cruise fuel mass and their 
+gradients. As explained in the same section,
+the number of the invocation of the surrogate models 
+is very high. \newline 
+
+Only with a surrogate model, which 
+replicates the underlying physical based 
+behavior correctly, the results of \emph{missioninformer} 
+can be considered correct as well.
+Due to this 
+heavy dominance $8$ different options for 
+Gaussian Kriging and RBF with TPS
+were chosen as the investigation parameter, 
+see table \ref{tab_3}. 
+For further reading, Gaussian Kriging will 
+be referred to as normal Kriging or 
+only Kriging and 
+RBF with TPS as TPS.
+The $8$ options 
+for Kriging and TPS  were equivalent and are given in 
+table \ref{tab_3}. The short names on left side 
+of the table defines the option's shortcut and are important 
+for interpreting
+the plot results in section \ref{sec_Diff_Surrogates}.
+The values $-1,0,1,2$ for Augmentation mean
+no, constant, linear, and quadratic trend function, 
+respectively. In case Regularization is set 
+to True, a regularization constant is added
+to each control point.\newline
+
+\begin{table}[!htb]
+    \centering
+    \begin{tabular}{l c c }
+        \multicolumn{1}{p{2cm}}{\textbf{Name}} &  \multicolumn{1}{p{2cm}}{\textbf{Augmen \newline tation}} 
+            &  \multicolumn{1}{p{2cm}}{\textbf{Regulari \newline zation}}\\
+            \hline
+            A & $-1$ &False \\
+            B & $0$ &False \\
+            C & $+1$ &False \\
+            D & $+2$ &False \\
+            E & $-1$ &True \\
+            F & $0$ &True \\
+            G & $+1$ &True \\
+            H & $+2$ &True \\
+        \end{tabular}
+        \caption{\emph{SMARTy} Kriging and TPS parameter used for investigation 
+        surrogate quality}
+        \label{tab_3}
+\end{table} 
+
+\FloatBarrier
+The investigations were performed 
+with two different missions as input and 
+are reproduced in table \ref{tab_2}. The masses 
+are given in kilogram and the 
+cruise altitude $h$ and cruise range $R_{cr}$
+in meters. For the central difference step-size the default value 
+of $1\mathrm{e}{-5}$ was chosen.  
+First the surrogate models Kriging, TPS and RBF 
+were only tested for the state condition, meaning 
+no gradients were calculated.
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l| c c c c c c }
+        \textbf{Mass} & \multicolumn{1}{c}{\textbf{Mission 1}} &&& 
+        \multicolumn{1}{c}{\textbf{Mission 2}}\\
+        \hline
+        maximal takeoff & $245 \mathrm{e}{3}$ &&&      $245\mathrm{e}{3}$         &&\\
+        maximal landing & $192.2 \mathrm{e}{3}$ &&&      $192.2\mathrm{e}{3}$         &&\\
+        operating empty & $132.5\mathrm{e}{3}$ &&&      $132.5\mathrm{e}{3} $         &&\\
+        manufactures empty & $119.2\mathrm{e}{3} $ &&&      $119.2\mathrm{e}{3} $         &&\\
+        maximum zero fuel  & $180.5\mathrm{e}{3} $ &&&      $180.5\mathrm{e}{3} $         &&\\
+        maximum fuel & $107.6\mathrm{e}{3}$ &&&      $107.6\mathrm{e}{3}$         &&\\
+        design payload & $38.52\mathrm{e}{3}$ &&&      $33.60\mathrm{e}{3} $         &&\\
+        maximum payload & $48.00\mathrm{e}{3}$ &&&      $48.00\mathrm{e}{3}  $         &&\\
+        \hline
+        &  &&&               &&\\
+        \textbf{Flying parameters} &  &&&               && \\
+        \hline 
+        $Ma$ & $0.83$ &&&      $0.82$         &&\\
+        $h$ & $10.668\mathrm{e}{3}$ &&&      $11.000\mathrm{e}{3}  $         &&\\
+        $R_{cr}$ & $9186.0\mathrm{e}{3} $ &&&      $5185.6\mathrm{e}{3} $         &&\\
+        \hline
+        &  &&&               &&\\
+        \textbf{Others} &  &&&               && \\
+        \hline 
+        step-size & $1\mathrm{e}{-5} $&&&      $1\mathrm{e}{-5}$         &&\\
+        weight-factor & $0.7$ &&&      $0.3$         &&\\
+        
+    \end{tabular}
+    \caption{Missions definitions for investigation on different surrogate models}
+    \label{tab_2}
+\end{table} 
+
+
+\FloatBarrier
+For \emph{SciPy}'s RBF $7$ different 
+kernel functions, which 
+are given in the equations \eqref{eq_34} -
+\eqref{eq_35}, were tested with 
+a \emph{SciPy}s \emph{smooth} value of $0.1$. 
+In case of \emph{smooth} value greater zero, 
+regularization is employed. Without 
+it having defined to be greater zero, 
+the generation of a surrogate model failed.
+For seeing the used \emph{SciPy} RBF's kernel functions and 
+interpreting the \emph{SciPy} RBF investigation results the table 
+\ref{tab_4} is provided. Note, the kernel 
+quintic was dropped due its high amount of 
+calculation time.
+%
+\begin{table}[!h]
+        \centering
+        \begin{tabular}{l l}
+            \multicolumn{1}{p{2cm}}{\textbf{Name}} &
+            \multicolumn{1}{p{2cm}}{\textbf{Kernel}}\\
+            \hline
+            A & multiquadric  \\
+            B &  inverse \\
+            C &  gaussian\\
+            D &  linear\\
+            E & cubic\\
+            F &  thin plate\\
+        \end{tabular}
+        \caption{Different \emph{SciPy} RBF kernels used for surrogate model 
+        quality investigation }
+        \label{tab_4}
+\end{table} 
+%
+\FloatBarrier
+Since in the state 
+calculation only 3 surrogate models ($\tilde{LoD}, 
+\tilde{AoA},  \tilde{TSFC}$) are required to be 
+generated, the research is conducted much faster 
+compared to the gradient version. 
+The weight 
+before cruise or the starting mass for the cruise 
+segment $m_s$, the fuel weight only 
+for the cruise segment $m_{cr}$, the
+total fuel mass $m_{f}$, which is required for the  
+whole mission  and the number 
+of the fix-point iterations are considered 
+for the state investigation. For each mass 
+the mean value and the standard deviation
+over the 
+options given 
+in the tables \ref{tab_3} and \ref{tab_4}
+following the equations \eqref{eq_36} and 
+\eqref{eq_37}, respectively were conducted.
+\begin{equation}
+    \label{eq_36}
+    \bar{x} = \frac{1}{N}\sum_{i=1}^{n}x_i
+\end{equation}
+
+\begin{equation}
+    \label{eq_37}
+    \sigma = \sqrt{\frac{1}{N} \sum_{i}^{N}(x_i - \bar{x})^{2}}
+\end{equation}
+
+The reason for monitoring 
+the mentioned masses is as follows. Since 
+only the cruise flight segment involves 
+a physical based equation rather 
+than the empirical collected fuel fractions, which 
+are constants and thus 
+their multiplication results to a 
+new constant (commutative behavior), 
+only a scaling difference between 
+the masses is expected. The fuel 
+fractions are used only before and after 
+the cruise flight segment. Therefore, 
+if mistakes occurs within the investigation, 
+plotting all the masses enables to find 
+them easily visually. Thus considering the
+mentioned masses can be viewed as a 
+verification technique. The second 
+reason is, the impact of the different 
+surrogate model options shall not 
+only be looked at the final outcome, 
+total fuel mass $f_m$, but also on 
+the masses in between. \newline 
+
+The number of fix-point iterations 
+for the state allows making 
+assumptions about the execution time. 
+In general, it can be assumed, the less 
+the number of fix-point iterations, the 
+less the execution time is. Thus, it 
+provides information about the impact 
+of the model parameter on the execution time
+and convergence behavior. For only Kriging,
+8 options were tested, therefore 8 results 
+are obtained. From here it is possible to 
+compare only within the Kriging options.
+For TPS the same is done with its 
+own 8 results. For RBF 7 different
+kernel versions were tested. With the 
+presented method the surrogate 
+model can only be compared within its 
+own surrogate model options environment.
+However, it is desired 
+to compare Kriging with TPS and with 
+\emph{SciPy}s RBF, which would result in $8+8+7 = 23$ results 
+to be compared. Note, for 
+further reading RBF will be used 
+as an abbreviation for \emph{SciPy}s RBF. 
+Since this is too much for one 
+single plot, the mean value for
+each surrogate model (Kriging, TPS, RBF) is 
+calculated and compared. In case 
+the mean values matches or exhibits 
+a low deviation it can be assumed that 
+the corresponding models derive to 
+same or resembling solutions and vice versa. \newline
+
+
+By looking at the standard deviation within 
+each model, a robustness analysis 
+can be performed. In case the standard deviation (std) 
+is low, the respective surrogate model is not influenced much 
+by the input parameters and thus can be 
+seen as stable. A stable or robust 
+might not be the most accurate model, however,
+it can be assumed to be more reliable for 
+unknown complex underlying functions. Also, 
+the robustness of the surrogate models 
+(Kriging, TPS, RBF) was compared among 
+each other.
+All investigations were performed for both missions 
+separately and together.
+For the gradient
+version, the same is done plus the 
+execution time for the whole process including 
+reading the aerodynamic input files and 
+writing out all the gradients.\newline
+
+The next step was to explore the accuracy of 
+the surrogate models. For this purpose, 
+a set of 38 training data was provided. With 
+this set 3 different accuracy investigations were employed.
+In the first version 20 sample points were 
+removed and the surrogate models were trained 
+thus with the remaining 18 sample points 
+(V18). The second version, 10 sample 
+points were removed and the surrogate models 
+were trained with 28 sample points (V28).
+In these both cases, the obtained 
+model was invoked at the removed samples locations.
+The actual functions value for 
+$\tilde{LoD}, \tilde{AoA}, \tilde{TSFC}$
+at the removed values are known, since
+they were part of the initial 38 sample 
+points. In order to evaluate 
+the error for the surrogate models, 
+RMSE according to equation \eqref{eq_24}
+was used. For the third investigation, 
+the \emph{Leave-one-out cross-validation}
+(LOOCV) was performed. The idea 
+of this method is, one sample point 
+is left out and with the remaining 
+sample points a surrogate model is 
+trained. In case of 38 sample 
+points (V38) there are 38 ways 
+to leave one sample point out and 
+thus 38 different surrogate models 
+can be generated. Each 
+generated surrogate model is 
+invoked at the
+location of the left out sample point
+and by exploiting RMSE the error 
+was measured.
+To be more precise, \emph{missioninformer} 
+automatically finds non trimmed sample data and 
+does not include it for generating surrogate models.
+For this workflow, instead of the overall 38 
+sample points, only 35 fully trimmed 
+sample points,  were used.  \newline
+
+For the 3 
+mentioned versions, each version can 
+be tested only with regard to the surrogate 
+model (Kriging, TPS, RBF) and inside 
+a respective surrogate model there are 
+8 options for Kriging and TPS and 7 
+options for RBF. However, because 
+bad execution time was observed when 
+using \emph{SciPy}s RBF, only Kriging and TPS 
+were chosen for the mentioned investigation.
+In case of RBF's quinitc kernel, even 
+after 4 hours no solution was obtained.
+The explained process is performed 
+for the state and the gradient version.
+The options which exhibit the least 
+RMSE are collected and presented in the 
+results subsection in \ref{subsec_Krig_TPS_Accu}.

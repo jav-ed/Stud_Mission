@@ -1,0 +1,288 @@
+
+
+\chapter{Introduction}
+\label{chap_1_Intro}
+This work is written for the \emph{Technische Universiät Braunschweig}
+in a cooperation with the German Aerospace Center (\emph{DLR}).
+It is the result of research topic defined by my supervisor 
+Andrei Merle and Prof. Stefan Görtz, both working for the DLR. The overall goal, 
+in very brief terms, is to calculate the fuel consumption 
+and its gradients with respect to later introduced shape parameters 
+for one or multiple individual flight missions. The developed tool for that purpose 
+is called \emph{missioninformer}.
+The workflow of the \emph{missioninformer} can be explained  
+with figure \ref{fig_1_Missinfo}. \emph{Missioninformer}
+can be treated as a black box, which makes its implementation into 
+existing analysis and optimization processes
+easier. It receives an input, the so-called 
+\emph{mission input}, which contains descriptive information about 
+a flight mission, e.g. payload, cruise range, flight Mach number (a 
+more detailed explanation will be given in section \ref{fig_1_Missinfo})
+and aerodynamical data.
+With these inputs \emph{missioninformer} provides the user with 2 outputs.
+The first one is a state value, it is the amount of fuel in kg which is 
+required for the mission. The second output are the gradients of 
+the fuel for the mission with respect to arbitrary aircraft 
+shape parameters. \newline
+
+
+% ===================================================
+% ==================== Motivation ===================
+% ===================================================
+\section{Motivation}
+\label{sec_Motivation}
+Aviation has become an 
+indispensable part of global economy. Its importance is 
+evident in the private sector, where it is connecting
+destinations worldwide
+and in the business sector, where goods are transported and 
+business trips are undertaken. Since an aircraft burns fuel and thus 
+emits carbon dioxide (CO2), nitrogen oxide (NOx) and 
+sulphur dioxide (SO2) its impact on 
+the environment is significant 
+and cannot be neglected. Emissions are so high that the European commission has 
+formulated a document called Flightpath 2050, where it defines two 
+of its goals to be reduction of CO2 and NOx emission by 75\% 
+per passenger kilometer
+and 90\%, respectively. 
+Currently, commercial aviation is responsible
+ for around 
+3.5 \% of the global carbon dioxide and nitrogen 
+oxide 
+emission \cite{lee_contribution_2021}
+and it can be assumed that in an increasingly globalized world the demand 
+for fast and convenient mobility will not diminish. 
+Industry and governments 
+around the world realized that taking active steps towards a cleaner 
+flying are essential for saving the planet earth. In 2010, the 
+international Civil Aviation Organization (\emph{ICAO}) formulated 
+industry-wide goals for reducing carbon emissions. 
+These goals can be summarized by 2 main 
+objectives, to establish carbon-neutral growth beyond  
+year 2020 and to further reduce carbon emissions to half of 
+the current level by the year 2050.\newline
+
+One simple way of reducing the overall carbon emissions  
+already set to practice is the application of single-engine taxiing. 
+With a single operating engine
+the fuel emissions are reduced only 
+for the time in which the taxiing and waiting are carried out.
+Considering a whole flight mission, taxiing and waiting
+represents only a small fraction of the mission. Thus, this is 
+not enough. Other techniques to reduce fuel consumption 
+already in use are flying at an optimal cruise speed or 
+using more environmental-friendly handbook trajectories. Methods 
+which still acquire much exploration, however, 
+can be assumed to play a main part in reducing fuel consumption.
+These are overall new 
+aircraft configurations, e.g. blended wing body and applying
+technologies like laminar flow control, boundary layer 
+ingestion, ultra-high bypass ratio engines, more and all electric 
+aircraft. The possibility 
+to combine multiple technologies is given and 
+is expected to lead to best results. The proposed \emph{missioninformer} 
+is not restricted to any aircraft configuration nor 
+to any new applied technological advancements.\newline
+
+The demand for more environmental-friendly 
+aircraft is 
+becoming steadily louder. Furthermore, fuel price 
+has increased and is 
+forecasted to increase in the future. Among others, one 
+of the main objectives of
+the \emph{DLR}'s institute 
+\emph{Aerodynamics and Flow Technology} is to fulfill the described demands. 
+Therefore, several 
+optimization process were developed here
+to find  structural, aerodynamical and 
+engine optimized aircraft designs, 
+details can be found in \cite{gortz_collaborative_2016, goertz_overview_2020}. 
+The fuel consumption 
+is targeted as the objective function inside an optimization process. The big 
+advantage of such an optimization would result in reducing the CO2 emissions and 
+thus pleasing the environmental demands. The \emph{missioninformer} is 
+written in a modular manner as mentioned earlier in this chapter.
+Therefore, it can be easily implemented into the \emph{DLR}'s 
+multi-disciplinary, -point and -objective optimization frameworks. 
+Also, the user is enabled to define his own mission or multiple missions. 
+Therefore, this feature could be used to enhance the already existing 
+multi-point capabilities for the optimization. The importance 
+of a multi-mission-optimization becomes visible, when thinking about 
+an aircraft, which is used for a wide variety of missions, e.g. 
+for different kinds of ranges, flight altitudes, speeds and payloads. 
+In case of a single mission optimization, the given 
+flight parameter will be suited optimally. However, a small 
+change in these conditions could result into unbearable consequences of
+the fuel consumption. 
+In practice, airlines want to buy aircrafts, which can be used 
+for more than just one mission. A multi-mission optimized 
+aircraft performs not as good for each condition, however it 
+will cover a variety of missions and conditions within reason. The 
+missioninformer, however, is not only suited for multi-point 
+optimization, rather the enhanced multi-mission optimization.
+For instance in the previously mentioned processes masses for which 
+the aircraft is trimmed are defined.
+Masses are defined through the method of multi-points, i.e.
+these are 
+only frozen and discontinuous discrete aerodynamic states for which 
+an optimization is carried out. In case of the multi-mission
+capable \emph{missioninformer}, 
+the masses are defined continuously, which comes closer 
+to the reality of flying and thus consuming 
+fuel. Furthermore, the \emph{missioninformer} takes 
+the snowball mass effect, which is described in 
+section \ref{sec_Fuel_Mass_iter} into account. Also, 
+since the input data is given by the aerodynamic output 
+of \emph{DLR}' analysis and 
+optimization workflow \emph{FSAerOpt} 
+\cite{merle_high-fidelity_2019} involving the 
+flow solver \emph{TAU}, each mission fuel mass 
+computation gets 
+aerodynamical data for a fully trimmed 
+state.
+\newline
+
+
+With this introduction the main 8 tasks for 
+developing the \emph{missionionformer} from scratch shall be mentioned:
+\begin{enumerate}
+    \item Literature review on mission analysis and review of Breguet's range formula.
+    \item Familiarization with the gradient-based optimization process
+    \item Conception of an interpolation module for mission analysis
+    \item Implementation of the Python module
+    \item Derivation of the module according to the optimization parameters
+    \item Verification of the derivation in case the derivation is done by complex-step or analytically
+    \item Interface for a gradient-based optimization process
+    \item Identification of a best practice
+  \end{enumerate}
+As far it is possible, each task will be 
+elaborated in this article. Since the tasks required much coding, 
+it is important to 
+mention the used programming language and the dependencies. 
+As for the programming language,
+\emph{Python 2} and \emph{Python 3} were chosen. For the libraries  
+\emph{Matplotlib, Scipy, NumPy} and \emph{DLR}'s own 
+Python library \emph{SMARTy} are deployed. For local coding a 
+Linux workstation provided 
+by the \emph{DLR} with the following hardware configuration 
+was used: \emph{CPU:} Intel(R) Xeon(R)
+CPU E3-1270 v3 @3.50GHz 
+and 32GB of RAM. Calculations were performed on the  following high 
+performance computer \emph{CARA}: \emph{CPU:} 2x AMD EPYC 7601 
+(32 cores; 2,2 GHz) per node 
+and 2168 nodes with 128 GB DDR4 (2666 MHz) RAM. 
+All calculations performed in 
+this report used the \emph{64} cores option. Some 
+parts of \emph{missioninformer} where NumPy is used, can 
+be assumed to benefit from this option. However, the 
+missioninformer itself is not parallized.
+
+% ===================================================
+% ==================== STATE OF THE ART =============
+% ===================================================
+\section{State of the art}
+\label{sec_1_State}
+The idea to reduce the entire fuel consumption is not
+new and a summary
+of the available methods is given in \cite{betts_survey_1998} 
+and a more recent one in \cite{kao_modular_2015}. However,
+some works still shall be recited. Flight Optimization System 
+(\emph{FLOPS}) is a modular approach allowing the user to select 
+appropriate modules for a given mission \cite{mccullers_aircraft_1984}.
+The aerodynamical data are generated by using the \emph{Delta Method}, 
+which is an empirical drag prediction method \cite{feagin_delta_1978}. 
+\emph{FLOPS} enables some numerical optimization schemes, e.g. Davidon-Fletcher-Powell,
+Broyden-Fletcher-Goldfarb-Shano and a Quadratic Extended Interior Penalty method 
+\cite{kao_modular_2015}. The gradients are calculated using finite 
+differing, which is easy to apply, however an adequate 
+derivation step size is required. The accuracy of gradients may 
+not be sufficient and in case of a high number of design variables 
+parallelization should be considered in order to get gradients 
+in an acceptable time limit. Transport Aircraft System Optimization 
+(\emph{TASOPT}) is another well known tool for mission analysis and 
+optimization \cite{greitzer_design_2010}. The benefit of the latter 
+is that physics-based models, rather than empirical data-tables are 
+applied. Using 
+data-tables results in interpolation could result into not 
+realizable designs. The physics for \emph{TASOPT} is obtained mostly by low-order 
+models.\newline 
+
+\emph{pyACDT} is an aircraft conceptual design tool \cite{perez_pyacdt_2008} 
+containing a mission analysis component. It uses the Breguet 
+range equation and empirically obtained fuel fractions for each 
+flight mission segment. Liem et al. \cite{liem_aerostructural_2013} 
+take a similar 
+approach, however with the advancement, that fuel fractions are only 
+going to be used for the startup, taxi and landing segments of the mission.
+The fuel burn for climb, cruise and descent segments are calculated 
+using a range equation and the flight equilibrium equations. The 
+different segments are linked together such that the fuel weights at 
+the end points of two neighboring segments must be equal. 
+Another well known tool for aircraft conceptual design 
+is developed by Lissys Ltd and is called \emph{PIANO}. It 
+is freely available, however, only for Windows and thus 
+not compatible for HPC-based optimization processes.
+\newline 
+
+Probably the two most well known mission analysis tools 
+are \emph{pyMission} and \emph{SUAVE}. 
+\emph{pyMission} is developed by the authors of 
+\cite{kao_modular_2015}
+and is now part of the openMDAO framework \cite{gray_openmdao_2019}. It 
+uses the flight equilibrium equations and a fuel 
+burn rate equation. In order to solve the fuel
+burn rate equation, which is an ODE, the amount 
+of fuel carried at the end of the mission 
+is provided as the initial condition. The explicit Euler 
+scheme starting from the end of the mission is applied. 
+Thus, marching backwards in distance to the start 
+of the mission is performed. For the rest of the mission 
+fuel fractions are used. The gradients 
+(total derivatives) for 
+the optimization performed are obtained 
+through the adjoint method \cite{martins_review_2013}. 
+\emph{SUAVE} is a conceptual 
+aircraft design framework developed at  
+Stanford University and can be used for conventional 
+and unconventional configurations. Tutorials as well 
+as documentation for \emph{SAVE}'s mission analysis tool 
+can be found on their 
+homepage \cite{noauthor_homepage_2021}. 
+In \cite{liem_multimission_2015, liem_aerostructural_2013,
+liem_surrogate_2015} the mission analysis 
+is applied by using surrogate models and mixture 
+of experts. Different kind 
+of Kriging methods and RBFs (Radial Basis Function) are used 
+to get interpolation models for lift, drag and pitching 
+moment coefficients from a four-dimensional input space with 
+variables, Mach number, angle of attack, flight 
+altitude and tail rotation angle. For startup, taxi, takeoff 
+and landing fuel fractions are used. The fuel burn for 
+climb, cruise and descent segments are derived through 
+numerical integration of a range equation. 
+The results of the paper can be summarized as follows: 
+the adaptive sampling improves the accuracy of surrogate models, 
+the convergence was to be found slow in some cases, particularly when modeling 
+complex profiles. Traditional 
+surrogate models (RBF and Kriging without mixture of experts)
+performed well for the simpler 
+lift and pitching moment coefficient ($C_L, C_M$)
+profiles. Using a mixture of gradient enhanced Kriging (GEK)
+models to approximate drag
+coefficients gave approximation errors of less than 
+5\% with less than 150 samples, whereas the adaptive sampling
+failed to converge when training a global model. Since 
+the traditional surrogate models approximate 
+less complex behavior well, the authors of 
+the papers recommend applying traditional 
+surrogate modelling instead of mixture 
+of experts. Latter requires much effort 
+for its implementation.
+Finally, it is worth mentioning Dabas et al., who optimize
+the pylon shape by coupling an aerodynamic
+optimization with a mission
+analysis tool in order to propagate aerodynamic 
+shape modifications to mission level \cite{dabas_error-based_2019}. The objective 
+function, however is not directly the 
+amount of fuel burnt, but rather the Cash Operating Costs (COC),
+which contain the burnt fuel as part of its weighted components.

@@ -1,0 +1,244 @@
+
+\chapter{Results}
+\label{chap_Results}
+
+In this chapter the results of the methods described 
+in previous chapter shall be presented. The first 
+topic for this purpose is the solution of 
+the state ODE from equation \eqref{eq_10}.
+
+
+\section{Solving the ODE}
+\label{sec_Solve_ODE_Methods}
+
+The main equation upon which's solution 
+the remaining computations are based on 
+is the ODE for the cruise 
+fuel burnt mass $m_{cr}$.
+
+\begin{equation}
+    \frac{dm_{cr}}{ds} = \frac{g}{a} \, \frac{1}{Ma}\,TSFC \,(m_s + m_{cr})
+    \, \frac{1}{
+    LoD \, cos(AoA) + sin(AoA)}   \tag{\ref{eq_10}}
+\end{equation}
+
+The used technique therefore is by calling 
+SciPy's function \emph{solve\_ivp} \cite{noauthor_scipys_2021}.
+The library comes along with different solvers and the solution 
+of all were investigated. However 
+only a selection of the most interesting 
+results  
+shall be presented here. Having compared all 
+available methods inside \emph{solve\_ivp} 
+it could be found out that \emph{LSODA} and 
+\emph{RK45} offered the least difference 
+to the analytical solution obtained by equation 
+\eqref{eq_16}. Its 
+derivation and explanations can be 
+read in sections \ref{sec_Solve_ODE}.
+\begin{equation}
+    m_{fe}(s = R_{cr}) =m_s \left(1-e^{\frac{-g}{a} \, 
+    \frac{1}{Ma} \, TSFC \, 
+    \frac{1}{LoD \,cos(AoA) + sin(AoA)} \, s} \right)
+    \tag{\ref{eq_16}}
+\end{equation}
+
+The analytical solution is only valid, when
+assuming that $LoD, AoA, TSFC$
+are constant. Comparing the analytical solution 
+with \emph{SciPy}'s numerical solution by employing 
+all available  methods, it could be observed, that 
+$LSODA$ exhibits best results. The figures from 
+\ref{fig_9_LSODA} to \ref{fig_12_RK45_Standard} depicts 
+the analytical and the numerical solution on the left 
+side and their deviation on the right side. One of the 
+options within \emph{LSODA} and \emph{RK45}
+is to set points where an integration step shall be 
+performed. The higher the number of the given 
+calculation points is, the higher the accuracy of 
+the outcome is. Figures \ref{fig_9_LSODA} and 
+\ref{fig_10_RK45} depict the results when 
+the user exerted calculation points. From range 
+$R = [0;100]$ meter and for the last 100 meter of the 
+cruise flight range, 500 uniformly 
+calculation points were set. In between, 
+$\frac{R_{max}}{8} = \frac{7297989}{8} = 912248 $
+calculation points were set. Even though 
+a high number of evaluation points 
+leads to a more accurate result, recall that for 
+each additional evaluation point, the 
+surrogate models needs to be invoked. Therefore, 
+it is desired to keep the number 
+of the control points low, if possible.\newline
+
+%%
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =0.85\textwidth]{2_Figures/3_Task/1_LSODA.pdf}
+    \caption{Solution obtained having used \emph{LSODA} with user defined 
+    calculation points}
+    \label{fig_9_LSODA}
+\end{figure}
+%
+%
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =0.85\textwidth]{2_Figures/3_Task/1_RK45.pdf}
+    \caption{Solution obtained having used \emph{RK45} with user defined 
+    calculation points}
+    \label{fig_10_RK45}
+\end{figure}
+
+
+In figures \ref{fig_11_LSODA_Standard} and \ref{fig_12_RK45_Standard},
+the same calculations are performed with \emph{LSODA} and \emph{RK45}, 
+respectively, but with their methods default number 
+of calculation points. The default number of calculation 
+points is much lower, e.g. for \emph{RK45} less than 20 sample 
+points were required. Comparing all the 4 presented
+results it can be stated that the deviation or \emph{delta} 
+between the analytical and numerical solution is 
+in the order of grams, which is
+sufficient for 
+the accuracy requirement of the \emph{missioninformer}.
+Even though \emph{LSODA} delivers the best performance, 
+since \emph{RK45} requires less integrations steps 
+points with barley less accuracy, \emph{RK45} with 
+its default method for setting calculation 
+points is set as default in the \emph{missioninformer}.
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =0.85\textwidth]{2_Figures/3_Task/2_StandardLSODA.pdf}
+    \caption{Solution obtained having used \emph{LSODA} without user defined 
+    calculation points}
+    \label{fig_11_LSODA_Standard}
+\end{figure}
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =0.85\textwidth]{2_Figures/3_Task/2_StandardRK45.pdf}
+    \caption{Solution obtained having used \emph{RK45} without user defined 
+    calculation points}
+    \label{fig_12_RK45_Standard}
+\end{figure}
+
+
+
+\FloatBarrier
+The results above were presented by assuming 
+$LoD, AoA, TSFC$ to be constant. However, 
+for \emph{missioninformer} they are not constant, but 
+dependent on $Ma, h, m$. In order 
+to see the effect of these variables not to 
+be constant, all available methods 
+within \emph{SciPy}s ODE solver were tested again.
+For testing purposes no real aerodynamic 
+data output was used, but rather some 
+reasonable values, which were only dependent 
+on $m$, were generated. This data 
+set was the input for a \emph{1d} interpolation, which 
+is also available in \emph{SciPy}. Coming to 
+the workflow, every time the ODE is solved, the 
+values for the variables $LoD, AoA, TSFC$ are 
+obtained by the mentioned 1d interpolation.
+This process can also be done with a lower 
+or higher number of calculation points.
+However, no deviation between the lower 
+and higher number of calculation points 
+version, could 
+be observed.\newline 
+
+The figures \ref{fig_13_LSODA_Inter} and 
+\ref{fig_14_RK45_Inter} show the results, when the mentioned
+1d interpolation and no interpolation is applied.
+On the left side, the default mechanism 
+for choosing calculation points is plotted.
+On the right side, the above explained 
+user defined calculation points were 
+used for deriving the solution. Both 
+sides show a deviation between 
+the interpolation active and inactive versions, which 
+is called \emph{delta} in the mentioned figures.
+Figure \eqref{fig_13_LSODA_Inter} shows 
+a strange and unexpected behavior in 
+its delta. This is explained as follows.
+The number of calculation 
+points for the active and inactive 
+with the defaults' 
+method to define calculation points is 
+not equal. 
+In the inactive interpolation version, the 
+default option for defining 
+calculation points 
+requires less calculation points.
+However, for calculating delta, 
+both number of calculation points 
+mus be equal, to be valid.
+Therefore,
+the delta on the left side can 
+not be considered to be correct. \newline 
+
+
+This observation tells us, that \emph{LSODA} is more 
+flexible in increasing the number of 
+calculation points than RK45. This 
+can bee seen by viewing the delta on the 
+left side of the figure \ref{fig_14_RK45_Inter}.
+Here, a monotonically increasing delta  can be identified. 
+The default version of
+\emph{RK45} took less than 20 calculation points, 
+whereas \emph{LSODA} required around 60 
+calculation points.
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =0.9\textwidth]{2_Figures/3_Task/1_Effect_LSODA_High_Number_Ranges.pdf}
+    \caption{Solution obtained having used \emph{LSODA} with and without user defined 
+    calculation points and active and inactive interpolation}
+    \label{fig_13_LSODA_Inter}
+\end{figure}
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =0.9\textwidth]{2_Figures/3_Task/1_Effect_RK45_High_Number_Ranges.pdf}
+    \caption{Solution obtained having used \emph{RK45} with and without user defined 
+    calculation points and active and inactive interpolation}
+    \label{fig_14_RK45_Inter}
+\end{figure}
+
+
+\FloatBarrier
+Comparing \emph{LSODA} with \emph{RK45} directly can be done 
+via figure \ref{fig_15_RK45_LSODA}. Important 
+for present concern is the right side, where 
+the blue and orange graphs are the objects of 
+our focus. However, the blue graph is not visible.
+The reason for that is, that is has been 
+draw before the orange graph has been drawn.
+Therefore, the blue graph is beneath the 
+covering orange graph. With this it can be 
+said, no noticeable deviation in the 
+results for active interpolation by having 
+defined a ridiculously high number 
+of calculation points can be seen. This leads to 
+the following conclusion. No real difference 
+in the accuracy of \emph{LSODA} and \emph{RK45} is 
+exhibited, however, \emph{LSODA} requires more 
+calculation points. As a consequence 
+of this, \emph{RK45} can be chosen as the 
+default method to solve the ODE 
+in the \emph{missioninformer}.
+
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width =\textwidth]{2_Figures/3_Task/6_Compare_User_Default_RK45_LSODA_High_Number_Ranges.pdf}
+    \caption{Direct compare \emph{RK45} with \emph{LSODA} for in/active and default/user versions}
+    \label{fig_15_RK45_LSODA}
+\end{figure}
+
